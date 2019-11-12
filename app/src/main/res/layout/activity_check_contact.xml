@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".checkContact">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+    <include layout="@layout/toolbar"
+        android:id="@+id/toolbar"/>
+
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17dp"
+        android:text="Enter cell no:"/>
+    <EditText
+        android:id="@+id/cellNo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17dp"
+        android:maxLength="13"
+        android:maxLines="1"
+        android:inputType="phone" />
+
+    <Button
+        android:onClick="send"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17dp"
+        android:layout_margin="4dp"
+        style="@style/sendButton"
+        android:text="Send"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17dp"
+        android:text="Enter the code:"/>
+    <EditText
+        android:id="@+id/code"
+        android:layout_width="match_parent"
+        android:textSize="17dp"
+        android:layout_margin="2dp"
+        android:inputType="number"
+        android:maxLines="1"
+        android:textColor="@android:color/black"
+        android:layout_height="wrap_content"
+
+        />
+    <Button
+        android:onClick="verify"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17dp"
+        android:layout_margin="4dp"
+        style="@style/sendButton"
+        android:text="Verify codes"/>
+
+
+</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

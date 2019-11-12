@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <TextView
+        android:text="Enter an additional contact:"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="10dp"
+        android:layout_height="wrap_content" />
+    <EditText
+        android:id="@+id/contact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginLeft="5dp"
+        android:maxLength="13"
+        android:inputType="phone"
+        android:maxLines="1"/>
+    <Button
+        android:id="@+id/addcontact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/sendButton"
+        android:text="Submit"/>
+
+</LinearLayout>

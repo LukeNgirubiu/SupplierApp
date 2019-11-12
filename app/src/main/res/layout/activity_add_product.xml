@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".addProduct">
+    <include layout="@layout/toolbar" android:id="@+id/tool"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17dp"
+        android:text="Product name:"
+        android:layout_margin="3dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        />
+    <EditText
+        android:id="@+id/productName"
+        android:layout_width="match_parent"
+        android:maxLines="1"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17dp"
+        android:text="Product quantity:"
+        android:layout_margin="3dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        />
+
+<EditText
+    android:id="@+id/productquanti"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:maxLines="1"
+    android:layout_margin="3dp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17dp"
+        android:text="Product Units:"
+        android:layout_margin="3dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        />
+
+
+    <EditText
+        android:id="@+id/productUnits"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:layout_margin="3dp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="17dp"
+        android:text="Price per Units:"
+        android:layout_margin="3dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        />
+
+
+    <EditText
+        android:id="@+id/productPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:layout_margin="3dp"/>
+    <Button
+        android:id="@+id/getImage"
+        android:layout_width="wrap_content"
+        android:text="Add product image:"
+        style="@style/sendButton"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"/>
+    <Button
+        android:id="@+id/send"
+        android:layout_width="match_parent"
+        android:text="Add product"
+        style="@style/sendButton"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

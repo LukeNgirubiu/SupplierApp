@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/user"
+        android:title="Add Business name"
+        />
+    <item android:id="@+id/changebusiness"
+        android:title="Change Business Name"
+        />
+    <item android:id="@+id/contact"
+        android:title="Change Contact"/>
+</menu>

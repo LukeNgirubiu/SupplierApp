@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/enquire"
+        android:title="Enquire" />
+    <item android:id="@+id/subscribe"
+        android:title="Subsrcibe"/>
+    <item android:id="@+id/unsubscribe"
+        android:title="Unsubsrcibe"/>
+</menu>

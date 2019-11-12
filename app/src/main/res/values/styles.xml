@@ -1,0 +1,22 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/appColor</item>
+        <item name="colorAccent">@color/appColor</item>
+    </style>
+<style name="sendButton">
+    <item name="android:background">@drawable/round</item>
+    </style>
+    <style name="items">
+        <item name="android:background">@drawable/circular</item>
+    </style>
+    <style name="textArea">
+        <item name="android:background">@drawable/textarea</item>
+    </style>
+    <style name="chat">
+        <item name="android:background">@drawable/chatbox</item>
+    </style>
+</resources>
