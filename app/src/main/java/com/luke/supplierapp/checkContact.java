@@ -87,11 +87,10 @@ public class checkContact extends AppCompatActivity {
         }
     }
     public void verify(View view){
-        final String cellno = cellPhoneNumber.getText().toString().trim();
-        String code = inputcode.getText().toString().trim();
+        final String cellno = cellPhoneNumber.getText().toString();
+        String code = inputcode.getText().toString();
         if (code.length() >= 3) {
             PhoneAuthCredential credential = PhoneAuthProvider.getCredential(phoneCode, code);
-            if (!credential.equals("")) {
 
                 auth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -110,7 +109,7 @@ public class checkContact extends AppCompatActivity {
                                         for (DocumentSnapshot query : queryDocumentSnapshots) {
                                             final cellContacts contacts = query.toObject(cellContacts.class);
                                             sqlite sql = new sqlite(getBaseContext());
-                                            sql.addId(contacts.getId());
+                                             sql.addId(contacts.getId());
                                             DocumentReference getting = firestore.collection("usersDetails").document(contacts.getId());
                                             getting.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                                 @Override
@@ -141,7 +140,7 @@ public class checkContact extends AppCompatActivity {
                         }
                     }
                 });
-            }
+
         } else {
             Toast.makeText(getBaseContext(), "Provide the right code ", Toast.LENGTH_LONG).show();
         }
