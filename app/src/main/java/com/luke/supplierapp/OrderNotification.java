@@ -54,7 +54,6 @@ public class OrderNotification extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        startForeground(122, notifying());
         list=new ArrayList<>();
         firestore = FirebaseFirestore.getInstance();
         referenc = firestore.collection("usersDetails");

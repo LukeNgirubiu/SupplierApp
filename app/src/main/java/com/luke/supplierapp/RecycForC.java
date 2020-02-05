@@ -67,7 +67,7 @@ holder.cardView.setOnClickListener(new View.OnClickListener() {
             context.startActivity(intent);
         }
         if(name.getCategory().equals("Categories")){
-            intent=new Intent(context,category.class);
+            intent=new Intent(context,category.class);//Enquiry
             intent.putExtra("dec",1);
             context.startActivity(intent);
         }

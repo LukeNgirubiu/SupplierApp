@@ -13,12 +13,17 @@
     <include layout="@layout/toolbar"
         android:id="@+id/toolbar"/>
 
-
-
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:textSize="17dp"
+        android:layout_marginTop="50dp"
+        android:textStyle="bold"
+        android:id="@+id/cellenrty"
         android:text="Enter cell no:"/>
     <EditText
         android:id="@+id/cellNo"
@@ -26,42 +31,55 @@
         android:layout_height="wrap_content"
         android:textSize="17dp"
         android:maxLength="13"
+        android:layout_below="@+id/cellenrty"
         android:maxLines="1"
         android:inputType="phone" />
 
     <Button
-        android:onClick="send"
+        android:id="@+id/sendNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="17dp"
+        android:layout_below="@+id/cellNo"
         android:layout_margin="4dp"
         style="@style/sendButton"
         android:text="Send"/>
 
     <TextView
+        android:id="@+id/codeentry"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/sendNumber"
+        android:text="Enter the code:"
         android:textSize="17dp"
-        android:text="Enter the code:"/>
+        android:textStyle="bold"
+        android:visibility="invisible" />
+
     <EditText
         android:id="@+id/code"
         android:layout_width="match_parent"
-        android:textSize="17dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/codeentry"
         android:layout_margin="2dp"
         android:inputType="number"
         android:maxLines="1"
         android:textColor="@android:color/black"
-        android:layout_height="wrap_content"
+        android:textSize="17dp"
+        android:visibility="invisible" />
 
-        />
     <Button
-        android:onClick="verify"
+        android:id="@+id/sendcode"
+        style="@style/sendButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="17dp"
+        android:layout_below="@+id/code"
         android:layout_margin="4dp"
-        style="@style/sendButton"
-        android:text="Verify codes"/>
+        android:text="Verify code"
+        android:textSize="17dp"
+        android:visibility="invisible" />
+</RelativeLayout>
+
+
 
 
 </LinearLayout>

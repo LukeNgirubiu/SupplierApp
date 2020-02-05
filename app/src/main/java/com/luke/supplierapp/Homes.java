@@ -2,6 +2,7 @@ package com.luke.supplierapp;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v7.app.AlertDialog;
@@ -32,16 +33,17 @@ import java.util.List;
 public class Homes extends AppCompatActivity {
     RecyclerView recyclerView;
     Toolbar toolbar;
-    List<prepareS> list;
     private String fname, sname, srname, imageString, contacts;
-    private hsRecy hs;
     private FirebaseFirestore firestore;
     private DocumentReference reference;
     private BroadcastReceiver broadcastReceiver;
-    private Double longitude,latitude;
+    private Double longitude, latitude;
+    private suppliersDashRecy dashboard;
+    private List<prepareC> list;
     private Date date;
     private int type;
-    private DocumentReference collectionReference;
+    private DocumentReference businesName;
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -63,14 +65,15 @@ public class Homes extends AppCompatActivity {
         setContentView(R.layout.activity_homes);
         sqlite sqlite = new sqlite(this);
         firestore = FirebaseFirestore.getInstance();
-        collectionReference = firestore.collection("BusinessNames").document(sqlite.getUser());
-        list = new ArrayList<>();
         recyclerView = findViewById(R.id.recyclerview);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        sqlite sdl = new sqlite(this);
+        getSupportActionBar().setTitle("Supplier");
+        //Products,Enquiries,Subscriptions,Orders
+
         firestore = FirebaseFirestore.getInstance();
-        reference = firestore.collection("usersDetails").document(sdl.getUser());
+        reference = firestore.collection("Particulars").document(sqlite.getUser());
+        businesName = firestore.collection("BusinessName").document(sqlite.getUser());
         userDetails details = new userDetails();
         reference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -78,11 +81,11 @@ public class Homes extends AppCompatActivity {
                 userDetails users = documentSnapshot.toObject(userDetails.class);
                 fname = users.getFirstName();
                 sname = users.getSecondName();
-                srname=users.getSurName();
-                contacts=users.getContact();
-                imageString=users.getImagePath();
-                type=users.getType();
-                date=users.getDate();
+                srname = users.getSurName();
+                contacts = users.getContact();
+                imageString = users.getImagePath();
+                type = users.getType();
+                date = users.getDate();
             }
         });
         details.setLongitude(longitude);
@@ -95,14 +98,14 @@ public class Homes extends AppCompatActivity {
         details.setType(type);
         details.setDate(date);
         reference.set(details);
-        getSupportActionBar().setTitle("Supplier");
-        list.add(new prepareS("Products"));
-        list.add(new prepareS("Enquiries"));
-        list.add(new prepareS("Subsriptions"));
-        list.add(new prepareS("Orders"));
-        hs = new hsRecy(list, this);
+        list = new ArrayList<>();
+        list.add(new prepareC("Products"));
+        list.add(new prepareC("Enquiries"));
+        list.add(new prepareC("Subscriptions"));
+        list.add(new prepareC("Orders"));
+        dashboard = new suppliersDashRecy(this, list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(hs);
+        recyclerView.setAdapter(dashboard);
         recyclerView.setHasFixedSize(true);
 
     }
@@ -118,20 +121,35 @@ public class Homes extends AppCompatActivity {
         int itemIndex = item.getItemId();
         switch (itemIndex) {
             case R.id.user:
-                Intent intent = new Intent(this, showSuppliers.class);
-                startActivity(intent);
-                break;
-            case R.id.changebusiness:
-
-                collectionReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                businesName.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        businessNames names = documentSnapshot.toObject(businessNames.class);
-                        Intent intents = new Intent(getBaseContext(), showSuppliers.class);
-                        intents.putExtra("businessName", names.getBusinessName());
-                        intents.putExtra("slogan", names.getSlogan());
-                        startActivity(intents);
-                        Toast.makeText(getBaseContext(), "Business Name changed", Toast.LENGTH_SHORT).show();
+                        if (documentSnapshot.exists()) {
+                            Toast.makeText(getBaseContext(), "Business name already exist", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Intent intents = new Intent(getBaseContext(), showSuppliers.class);
+                            intents.putExtra("businessName", "");
+                            intents.putExtra("slogan", "");
+                            startActivity(intents);
+                        }
+                    }
+                });
+
+                break;
+            case R.id.changebusiness:
+                businesName.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+                            businessNames names = documentSnapshot.toObject(businessNames.class);
+                            Intent intents = new Intent(getBaseContext(), showSuppliers.class);
+                            intents.putExtra("businessName", names.getBusinessName());
+                            intents.putExtra("slogan", names.getSlogan());
+                            startActivity(intents);
+
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Not available", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
 
@@ -154,7 +172,7 @@ public class Homes extends AppCompatActivity {
                                     sqlite sdl = new sqlite(getBaseContext());
                                     contacts cont = new contacts();
                                     cont.setUserId(sdl.getUser());
-                                    cont.setContact(contact.getText().toString().trim());
+                                    cont.setContact(contact.getText().toString());
                                     collect.add(cont);
                                 }
                             }
@@ -169,6 +187,7 @@ public class Homes extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
 
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -177,3 +196,4 @@ public class Homes extends AppCompatActivity {
         }
     }
 }
+/* */

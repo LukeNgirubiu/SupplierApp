@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
@@ -42,18 +43,19 @@ public class Qrders extends AppCompatActivity {
         user = bundle.getString("userType");
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         CollectionReference collectionReference = firestore.collection("Orders");
-        collectionReference.whereEqualTo(user, sql.getUser()).orderBy(" seen", com.google.firebase.firestore.Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        collectionReference.whereEqualTo(user, sql.getUser()).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                list.clear();
+                if(!queryDocumentSnapshots.isEmpty()){
                 for (QueryDocumentSnapshot query : queryDocumentSnapshots) {
-                    setQrders setqorders=query.toObject(setQrders.class);
+                    setQrders setqorders = query.toObject(setQrders.class);
                     setqorders.setOrderId(query.getId());
                     list.add(setqorders);
                 }
-                qorders=new qrderRecy(getBaseContext(),list,user);
-                recyclerView.setAdapter(qorders);
-            }
+                qorders = new qrderRecy(getBaseContext(), list, user);
+               recyclerView.setAdapter(qorders);}else {
+                    Toast.makeText(getBaseContext(),"No order",Toast.LENGTH_SHORT).show();}}
+
         });
         recyclerView.setHasFixedSize(true);
     }

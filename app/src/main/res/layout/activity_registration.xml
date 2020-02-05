@@ -69,13 +69,6 @@
 
             android:text="Buyer" />
     </RadioGroup>
-    <Button
-        android:id="@+id/getImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Get your profile image"
-        android:layout_marginBottom="5dp"
-        style="@style/sendButton"/>
 
     <Button
         android:id="@+id/sendingDetails"

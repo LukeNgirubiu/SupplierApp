@@ -32,19 +32,16 @@ public class Start extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         localdb=new sqlite(this);
         firestore= FirebaseFirestore.getInstance();
         ConnectivityManager connect=(ConnectivityManager)getBaseContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo=connect.getActiveNetworkInfo();
-
-        locationPermissions();
         boolean network=networkInfo!=null&&networkInfo.isAvailable()&&networkInfo.isConnected();
         if(network==true){
-            locationPermissions();
 
             int row=localdb.CountRows();
             if(row==1){
-                Toast.makeText(this,"Available",Toast.LENGTH_LONG).show();
                 reference = firestore.collection("usersDetails").document(localdb.getUser());
                 reference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -53,12 +50,13 @@ public class Start extends AppCompatActivity {
                         if(users.getType()==1){
                             Intent intent=new Intent(getBaseContext(),Homes.class);
                             startActivity(intent);
-                            Intent startservice=new Intent(Start.this,OrderNotification.class);
-                            startService(startservice);
+                            finishAffinity();
+
                         }
-                        else{
+                        if(users.getType()==2){
                             Intent intent=new Intent(getBaseContext(),Homec.class);
                             startActivity(intent);
+                            finishAffinity();
                         }
                     }
                 });
@@ -67,28 +65,14 @@ public class Start extends AppCompatActivity {
             else {
                 Intent intent=new Intent(this,checkContact.class);
                 startActivity(intent);
+
             }
         }
         else {
             setContentView(R.layout.activity_start);
         }
     }
-    private boolean locationPermissions(){
-        if(Build.VERSION.SDK_INT>=23&& ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED&&ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED){
-requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},20);
-        }
-        return false;
-    }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode==20){
-            if(!(grantResults[0]==PackageManager.PERMISSION_GRANTED&&grantResults[1]==PackageManager.PERMISSION_GRANTED)){
-                locationPermissions();
-            }
-        }
-    }
     @Override
     public void onBackPressed() {
         super.onBackPressed();

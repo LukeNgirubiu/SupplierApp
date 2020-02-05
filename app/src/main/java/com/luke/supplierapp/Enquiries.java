@@ -6,6 +6,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -33,6 +34,8 @@ public class Enquiries extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enquiries);
         tool = findViewById(R.id.too);
+        setSupportActionBar(tool);
+        getSupportActionBar().setTitle("Enquiries");
         recy = findViewById(R.id.recyclerview);
         firestore = FirebaseFirestore.getInstance();
         sqlite sqlite = new sqlite(this);
@@ -45,11 +48,12 @@ public class Enquiries extends AppCompatActivity {
         refer.orderBy("seen", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                enque.clear();
+                if(!queryDocumentSnapshots.isEmpty()) {
                 for (QueryDocumentSnapshot query : queryDocumentSnapshots) {
                     setEnqChat eq = query.toObject(setEnqChat.class);
                     enque.add(eq);
-                }
+                } }
+                else {Toast.makeText(getBaseContext(),"No enquiry",Toast.LENGTH_SHORT).show();}
                 chats = new enquiriRecy(enque, getBaseContext());
                 recy.setAdapter(chats);
             }

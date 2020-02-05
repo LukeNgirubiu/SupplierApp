@@ -7,6 +7,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
@@ -47,11 +48,14 @@ private Toolbar tool;
 collect.orderBy("seen", Query.Direction.DESCENDING).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
     @Override
     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+        if(!queryDocumentSnapshots.isEmpty()){
         for(QueryDocumentSnapshot query:queryDocumentSnapshots){
             setSubsriptions sub=query.toObject(setSubsriptions.class);
             sub.setId(query.getId());
             list.add(sub);
-        }
+        }}
+        else {
+            Toast.makeText(getBaseContext(),"No subscription",Toast.LENGTH_SHORT).show();}
         subss=new subscriberDetails(list,getBaseContext());
         recyclerView.setAdapter(subss);
     }

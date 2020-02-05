@@ -17,83 +17,83 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
 
-public class hsRecy extends RecyclerView.Adapter<hsRecy.Viewing> {
-    List<prepareS> list;
-    Context context;
+public class suppliersDashRecy extends RecyclerView.Adapter<suppliersDashRecy.Veiwing> {
+    private Context context;
+    private List<prepareC> listing;
 
-    public hsRecy(List<prepareS> list, Context context) {
-        this.list = list;
+    public suppliersDashRecy(Context context, List<prepareC> listing) {
         this.context = context;
+        this.listing = listing;
     }
 
     @NonNull
     @Override
-    public hsRecy.Viewing onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.customerview, parent, false);
-        return new Viewing(view);
+    public Veiwing onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view= LayoutInflater.from(context).inflate(R.layout.customerview,parent,false);
+        return new Veiwing(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final hsRecy.Viewing holder, int position) {
-        final prepareS prep = list.get(position);
-        holder.dashitem.setText(prep.getSupplierMenu());
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        CollectionReference reference;
-        sqlite sql = new sqlite(context);
-        if (prep.getSupplierMenu().equals("Products")) {
+    public void onBindViewHolder(@NonNull final Veiwing holder, int position) {
+         final prepareC name=listing.get(position);
+        FirebaseFirestore firestore=FirebaseFirestore.getInstance();
+        sqlite sql=new sqlite(context);
+        String user=sql.getUser();
+        holder.homeItem.setText(name.getCategory());
+        if (name.getCategory().equals("Products")) {
 
-            reference = firestore.collection("Products").document(sql.getUser()).collection("products");
+           CollectionReference reference = firestore.collection("Products").document(sql.getUser()).collection("products");
             reference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     int number = queryDocumentSnapshots.size();
                     if (number > 0) {
-                        holder.dashquantity.setText(Integer.toString(number));
+                        holder.quantity.setText(Integer.toString(number));
                     } else {
-                        holder.dashquantity.setText("");
+                        holder.quantity.setText("");
                     }
                 }
             });
         }
-        if (prep.getSupplierMenu().equals("Enquiries")) {
+        if (name.getCategory().equals("Enquiries")) {
 
-            reference = firestore.collection("Enquiry");
-            reference.whereEqualTo("toId",sql.getUser()).whereEqualTo("seen",false).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            CollectionReference enquire = firestore.collection("Enquiry");
+            enquire.whereEqualTo("toId",sql.getUser()).whereEqualTo("seen",false).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     int numba = queryDocumentSnapshots.size();
                     if (numba > 0) {
-                        holder.dashquantity.setText(Integer.toString(numba));
+                        holder.quantity.setText(Integer.toString(numba));
                     } else {
-                        holder.dashquantity.setText("");
+                        holder.quantity.setText("");
                     }
                 }
             });
         }
-        if (prep.getSupplierMenu().equals("Subsriptions")) {
-            reference = firestore.collection("Subscription").document(sql.getUser()).collection("subscription");
-            reference.whereEqualTo("seen",false).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        if (name.getCategory().equals("Subsriptions")) {
+            CollectionReference subscription = firestore.collection("Subscription").document(sql.getUser()).collection("subscription");
+            subscription.whereEqualTo("seen",false).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     int number = queryDocumentSnapshots.size();
                     if (number > 0) {
-                        holder.dashquantity.setText(Integer.toString(number));
+                        holder.quantity.setText(Integer.toString(number));
                     } else {
-                        holder.dashquantity.setText("");
+                        holder.quantity.setText("");
                     }
                 }
             });
         }
-        if(prep.getSupplierMenu().equals("Orders")){
-            reference=firestore.collection("Orders").document(sql.getUser()).collection("order");
-            reference.whereEqualTo("supplierId",sql.getUser()).whereEqualTo("seen",false).whereEqualTo("seller",0).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        if(name.getCategory().equals("Orders")){
+            CollectionReference orders=firestore.collection("Orders").document(sql.getUser()).collection("order");
+            orders.whereEqualTo("supplierId",sql.getUser()).whereEqualTo("seen",false).whereEqualTo("seller",0).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     int number=queryDocumentSnapshots.size();
                     if (number > 0) {
-                        holder.dashquantity.setText(Integer.toString(number));
+                        holder.quantity.setText(Integer.toString(number));
                     } else {
-                        holder.dashquantity.setText("");
+                        holder.quantity.setText("");
                     }
                 }
             });
@@ -101,20 +101,20 @@ public class hsRecy extends RecyclerView.Adapter<hsRecy.Viewing> {
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(prep.getSupplierMenu().equals("Orders")){
+                if(name.getCategory().equals("Orders")){
                     Intent send=new Intent(context,Qrders.class);
                     send.putExtra("userType","supplierId");
                     context.startActivity(send);
                 }
-                if (prep.getSupplierMenu().equals("Subsriptions")) {
+                if (name.getCategory().equals("Subscriptions")) {
                     Intent notify=new Intent(context,Notifiying.class);
                     context.startActivity(notify);
                 }
-                if (prep.getSupplierMenu().equals("Enquiries")) {
+                if (name.getCategory().equals("Enquiries")) {
                     Intent intent=new Intent(context,Enquiries.class);
                     context.startActivity(intent);
                 }
-                if(prep.getSupplierMenu().equals("Products")){
+                if(name.getCategory().equals("Products")){
                     Intent intent=new Intent(context,productSeller.class);
                     context.startActivity(intent);
                 }
@@ -125,18 +125,17 @@ public class hsRecy extends RecyclerView.Adapter<hsRecy.Viewing> {
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return listing.size();
     }
 
-    public class Viewing extends RecyclerView.ViewHolder {
-        TextView dashitem, dashquantity;
+    public class Veiwing extends RecyclerView.ViewHolder {
+        TextView homeItem,quantity;
         CardView cardView;
-
-        public Viewing(View itemView) {
+        public Veiwing(View itemView) {
             super(itemView);
+            homeItem=itemView.findViewById(R.id.item);
+            quantity=itemView.findViewById(R.id.quantity);
             cardView=itemView.findViewById(R.id.card);
-            dashitem = itemView.findViewById(R.id.item);
-            dashquantity = itemView.findViewById(R.id.quantity);
         }
     }
 }

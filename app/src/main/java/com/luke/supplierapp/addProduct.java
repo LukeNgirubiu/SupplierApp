@@ -75,10 +75,10 @@ public class addProduct extends AppCompatActivity {
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if ((productNam.getText().toString().length() > 2) &&
-                        (productPr.getText().toString().length() > 0) && (productQuant.getText().toString().length() > 0) &&
-                        (productUnit.getText().toString().length() > 1) && (productNam.getText().toString().length() > 2) &&
-                        (productImage == null)) {
+                if ((productNam.getText().toString().length() > 2) &
+                        (productPr.getText().toString().length() > 0) &(productQuant.getText().toString().length() > 0) &
+                        (productUnit.getText().toString().length() > 0) &
+                        (productImage != null)) {
 
                     final StorageReference save = store.child(System.currentTimeMillis() + "." + getPathExtension(productImage));
                     save.putFile(productImage).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
@@ -157,5 +157,13 @@ public class addProduct extends AppCompatActivity {
         ContentResolver resolver = getContentResolver();
         MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
         return mimeTypeMap.getExtensionFromMimeType(resolver.getType(uri));
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (broadcastReceiver != null) {
+            unregisterReceiver(broadcastReceiver);
+        }
+
     }
 }

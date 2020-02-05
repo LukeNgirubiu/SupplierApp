@@ -66,9 +66,7 @@ public class imageShowRecy extends RecyclerView.Adapter<imageShowRecy.Veiwer> {
                                   Toast.makeText(context,"Deleted successful",Toast.LENGTH_SHORT).show();
                               }
                           });
-                          image.remove(position);
-                          notifyItemRemoved(position);
-                          notifyItemRangeChanged(position, image.size());
+
 
 
                       }

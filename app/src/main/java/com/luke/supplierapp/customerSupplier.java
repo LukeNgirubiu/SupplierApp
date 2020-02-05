@@ -45,8 +45,8 @@ public class customerSupplier extends AppCompatActivity {
             broadcastReceiver=new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    myLongitude=intent.getDoubleExtra("",0);
-                    myLatitude=intent.getDoubleExtra("",0);
+                   // myLongitude=intent.getDoubleExtra("Longi",34.57849306574839);
+                   // myLongitude=                myLatitude=intent.getDoubleExtra("Latit",1.546372819789788);
                 }
             };
             registerReceiver(broadcastReceiver,new IntentFilter("Locations"));
@@ -61,14 +61,16 @@ public class customerSupplier extends AppCompatActivity {
         setSupportActionBar(toolbar);
         firestore=FirebaseFirestore.getInstance();
         getSupportActionBar().setTitle("Suppliers");
-         reference = firestore.collection("usersDetails");
+         reference = firestore.collection("Particulars");
         Bundle bundels = getIntent().getExtras();
         determint=bundels.getInt("Determiner");
         categoryId=bundels.getString("categoryId");
         recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         suppliers = new ArrayList<>();
-if(determint==1){
+        myLongitude=34.57849306574839;
+        myLatitude=1.546372819789788;
+        if(determint==1){
     getSuppliersByCoord();
 }
 if(determint==2){
@@ -106,11 +108,11 @@ if(determint==2){
         secondlong=myLongitude+0.45454546;
         CollectionReference collectionReference=firestore.collection("Category").document(id).collection("category");
         collectionReference.whereGreaterThan("latitude",firstlat)
-                .whereLessThan("latitude",secondlat).whereGreaterThan(" longitude",firstlong).
+                .whereLessThan("latitude",secondlat);
+        collectionReference.whereGreaterThan(" longitude",firstlong).
                 whereLessThan(" longitude",secondlong).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                suppliers.clear();
                 for(QueryDocumentSnapshot query:queryDocumentSnapshots){
                     categorySet categ=query.toObject(categorySet.class);
                     DocumentReference documentReference=reference.document(categ.getSupplierId());

@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -72,56 +73,30 @@ public class productSellerRecy extends RecyclerView.Adapter<productSellerRecy.Vi
 
                                 break;
                             case R.id.delete:
-                                AlertDialog.Builder prepare = new AlertDialog.Builder(context);
-                                prepare.setTitle("Delete product");
-                                prepare.setMessage(setProduct.getProductName());
-                                prepare.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                                sqlite sql = new sqlite(context);
+                                final List<Images> list = new ArrayList<>();
+                                CollectionReference refer = firestore.collection("Productimges").document(sql.getUser()).collection(setProduct.getProductId());
+                                DocumentReference delet = reference.document(setProduct.getProductId());
+                                delet.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        sqlite sql = new sqlite(context);
-                                        final List<Images> list = new ArrayList<>();
-                                        CollectionReference refer = firestore.collection("Productimges").document(sql.getUser()).collection(setProduct.getProductId());
-                                        DocumentReference delete = reference.document(setProduct.getProductId());
-                                        delete.delete().addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-
-                                                Toast.makeText(context, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
-                                            }
-                                        }).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                products.remove(position);
-                                                notifyItemRemoved(position);
-                                                notifyItemRangeChanged(position,products.size());
-                                                Toast.makeText(context, "Deletion successful", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                                        refer.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                                for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                                                    Images images = doc.toObject(Images.class);
-                                                    images.setImgeId(doc.getId());
-                                                    list.add(images);
-                                                }
-                                            }
-                                        });
-                                        for (Images img : list) {
-                                            DocumentReference del = refer.document(img.getProductId());
-                                            del.delete();
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(context,"Deleted",Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                                refer.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                                            Images images = doc.toObject(Images.class);
+                                            images.setImgeId(doc.getId());
+                                            list.add(images);
                                         }
-                                        dialog.dismiss();
                                     }
                                 });
-                                prepare.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                                AlertDialog creating = prepare.create();
-                                creating.show();
+                                for (Images img : list) {
+                                    DocumentReference del = refer.document(img.getProductId());
+                                    del.delete();
+                                }
                                 break;
                             case R.id.viewImage:
                                 Intent intent = new Intent(context, productsImages.class);
@@ -130,52 +105,15 @@ public class productSellerRecy extends RecyclerView.Adapter<productSellerRecy.Vi
                                 context.startActivity(intent);
                                 break;
                             case R.id.details:
-                                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                                View view = inflater.inflate(R.layout.update_products_details, null);
-                                final EditText productname = view.findViewById(R.id.productName);
-                                final EditText prodquant = view.findViewById(R.id.quantity);
-                                final EditText productp = view.findViewById(R.id.prodPrice);
-                                final EditText unit = view.findViewById(R.id.units);
-                                Button send = view.findViewById(R.id.submit);
-                                productname.setText(setProduct.getProductName());
-                                prodquant.setText(Long.toString(setProduct.getQuantity()));
-                                productp.setText(Long.toString(setProduct.getProductPrice()));
-                                unit.setText(setProduct.getUnits());
-                                send.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        if ((productname.getText().toString().length() > 1)
-                                                && (prodquant.getText().toString().length() > 0) &&
-                                                (unit.getText().toString().length() > 0) &&
-                                                (productp.getText().toString().length() > 0)) {
-                                            DocumentReference doc = reference.document(setProduct.getProductId());
-                                            productSet update = new productSet();
-                                            update.setUnits(unit.getText().toString());
-                                            update.setProductPrice(Long.parseLong(productp.getText().toString()));
-                                            update.setProductName(productname.getText().toString());
-                                            update.setQuantity(Long.parseLong(prodquant.getText().toString()));
-                                            update.setCategoryId(setProduct.getCategoryId());
-                                            update.setProductPicture(setProduct.getProductPicture());
-                                            doc.set(update).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    Toast.makeText(context, "Update successful", Toast.LENGTH_SHORT).show();
-                                                }
-                                            }).addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    Toast.makeText(context, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
-                                        } else {
-                                            Toast.makeText(context, "Make correct entries", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                });
-                                builder.setView(view);
-                                AlertDialog dialog = builder.create();
-                                dialog.show();
+                               Intent intent1=new Intent(context,updateForProducts.class);
+                               intent1.putExtra("Name",setProduct.getProductName());
+                               intent1.putExtra("ID",setProduct.getProductId());
+                               intent1.putExtra("CATEGORY",setProduct.getCategoryId());
+                               intent1.putExtra("IMAGE",setProduct.getProductPicture());
+                               intent1.putExtra("PRICE",setProduct.getProductPrice());
+                               intent1.putExtra("QUANTITY",setProduct.getQuantity());
+                               intent1.putExtra("UNITS",setProduct.getUnits());
+                               context.startActivity(intent1);
                                 break;
                         }
                         return false;
@@ -194,7 +132,7 @@ public class productSellerRecy extends RecyclerView.Adapter<productSellerRecy.Vi
 
     public class Viewer extends RecyclerView.ViewHolder {
         CardView cardView;
-        AppCompatImageView imagings;
+       ImageView imagings;
         TextView productPrice, productQuantity, producName;
 
         public Viewer(View itemView) {

@@ -12,7 +12,7 @@ public class userDetails {
     private Double longitude;
     private String imagePath;
     private int type;
-    String id;
+    private String id;
     private String contact;
     @ServerTimestamp
     Date date;
@@ -31,22 +31,6 @@ public class userDetails {
         this.id = id;
         this.contact = contact;
         this.date = date;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getContact() {
-        return contact;
-    }
-
-    public void setContact(String contact) {
-        this.contact = contact;
     }
 
     public String getFirstName() {
@@ -89,6 +73,14 @@ public class userDetails {
         this.longitude = longitude;
     }
 
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
     public int getType() {
         return type;
     }
@@ -97,19 +89,27 @@ public class userDetails {
         this.type = type;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getContact() {
+        return contact;
+    }
+
+    public void setContact(String contact) {
+        this.contact = contact;
+    }
+
     public Date getDate() {
         return date;
     }
 
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
     }
 }

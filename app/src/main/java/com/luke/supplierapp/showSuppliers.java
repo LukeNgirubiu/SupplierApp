@@ -51,6 +51,7 @@ public class showSuppliers extends AppCompatActivity {
                             Toast.makeText(getBaseContext(), "Changes made successfully", Toast.LENGTH_SHORT).show();
                             Intent send=new Intent(getBaseContext(),Homes.class);
                             startActivity(send);
+                            finishAffinity();
                         }
                     });
 

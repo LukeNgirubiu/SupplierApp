@@ -12,29 +12,27 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
+import android.content.Context;
 
-import com.google.firebase.firestore.FirebaseFirestore;
 
-import io.grpc.Context;
 
 public class locations extends Service {
     private LocationListener locationListener;
-    private LocationManager manager;
+    private LocationManager locationManager;
     public static final String CHANNEL_ID = "SJTE19";
     public static final String CHANNEL_NAME = "Suppliers";
     public static final String CHANNEL_DESCRIPTION = "Supplier describe";
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        return START_NOT_STICKY;
+    public IBinder onBind(Intent intent) {
+        return null;
     }
-
 
     @SuppressLint("MissingPermission")
     @Override
     public void onCreate() {
         super.onCreate();
-        startForeground(1222, notifying());
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -56,30 +54,23 @@ public class locations extends Service {
 
             @Override
             public void onProviderDisabled(String provider) {
-
+                Intent intent=new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         };
-        manager = (LocationManager) getApplicationContext().getSystemService(android.content.Context.LOCATION_SERVICE);
-        manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 300, 0, locationListener);
+        locationManager=(LocationManager)getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,300,0,locationListener);
 
-    }
-
-//enable a service run forever in android version 8.0 and above
-   private Notification notifying() {
-        if (Build.VERSION.SDK_INT > 25) {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
-            NotificationManager manage;
-            manage = getSystemService(NotificationManager.class);
-            channel.setDescription(CHANNEL_DESCRIPTION);
-            manage.createNotificationChannel(channel);
-            Notification.Builder build = new Notification.Builder(getApplicationContext(), CHANNEL_NAME);
-            return build.build();
-        }
-        return null;
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    public void onDestroy() {
+        super.onDestroy();
+        if(locationManager!=null){
+            locationManager.removeUpdates(locationListener);
+        }
     }
+
+
 }

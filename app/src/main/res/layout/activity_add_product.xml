@@ -18,6 +18,7 @@
         android:id="@+id/productName"
         android:layout_width="match_parent"
         android:maxLines="1"
+        android:inputType="text"
         android:layout_height="wrap_content"
         android:layout_margin="3dp"/>
 
@@ -35,6 +36,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:maxLines="1"
+    android:inputType="number"
     android:layout_margin="3dp"/>
     <TextView
         android:layout_width="match_parent"
@@ -51,6 +53,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:maxLines="1"
+
         android:layout_margin="3dp"/>
     <TextView
         android:layout_width="match_parent"
@@ -67,6 +70,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:maxLines="1"
+        android:inputType="number"
         android:layout_margin="3dp"/>
     <Button
         android:id="@+id/getImage"

@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.luke.supplierapp">
 
+    <uses-feature android:name="android.hardware.location.network" />
+
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.SEND_SMS" />
@@ -50,7 +52,10 @@
         <service
             android:name=".OrderNotification"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".submit" />
+        <activity android:name=".updateForProducts"></activity>
     </application>
 
 </manifest>
