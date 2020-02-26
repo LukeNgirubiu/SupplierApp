@@ -52,7 +52,7 @@ public class productSellerRecy extends RecyclerView.Adapter<productSellerRecy.Vi
         final productSet setProduct = products.get(position);
         Picasso.get().load(setProduct.getProductPicture()).into(holder.imagings);
         holder.productPrice.setText("Ksh " + setProduct.getProductPrice());
-        holder.productQuantity.setText(getItemCount() + " " + setProduct.getUnits());
+        holder.productQuantity.setText(setProduct.getQuantity()+ " " + setProduct.getUnits());
         holder.producName.setText(setProduct.getProductName());
         holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -80,6 +80,9 @@ public class productSellerRecy extends RecyclerView.Adapter<productSellerRecy.Vi
                                 delet.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
+                                        products.remove(position);
+                                        notifyItemRemoved(position);
+                                        notifyItemRangeChanged(position, products.size());
                                         Toast.makeText(context,"Deleted",Toast.LENGTH_LONG).show();
                                     }
                                 });

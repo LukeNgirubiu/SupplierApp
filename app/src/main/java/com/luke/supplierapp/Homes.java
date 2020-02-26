@@ -33,81 +33,49 @@ import java.util.List;
 public class Homes extends AppCompatActivity {
     RecyclerView recyclerView;
     Toolbar toolbar;
-    private String fname, sname, srname, imageString, contacts;
+    private String fname, sname, srname, imageString, contacts, userdId;
     private FirebaseFirestore firestore;
     private DocumentReference reference;
     private BroadcastReceiver broadcastReceiver;
-    private Double longitude, latitude;
+    private Double Latitude, Longitude, Altitude;
     private suppliersDashRecy dashboard;
     private List<prepareC> list;
     private Date date;
     private int type;
     private DocumentReference businesName;
 
+
     @Override
     protected void onResume() {
         super.onResume();
-        if (broadcastReceiver == null) {
-            broadcastReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    longitude = intent.getDoubleExtra("Longi", 0);
-                    latitude = intent.getDoubleExtra("Latit", 0);
-                }
-            };
-        }
-        registerReceiver(broadcastReceiver, new IntentFilter("Locations"));
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_homes);
-        sqlite sqlite = new sqlite(this);
-        firestore = FirebaseFirestore.getInstance();
-        recyclerView = findViewById(R.id.recyclerview);
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Supplier");
-        //Products,Enquiries,Subscriptions,Orders
-
-        firestore = FirebaseFirestore.getInstance();
-        reference = firestore.collection("Particulars").document(sqlite.getUser());
-        businesName = firestore.collection("BusinessName").document(sqlite.getUser());
-        userDetails details = new userDetails();
-        reference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                userDetails users = documentSnapshot.toObject(userDetails.class);
-                fname = users.getFirstName();
-                sname = users.getSecondName();
-                srname = users.getSurName();
-                contacts = users.getContact();
-                imageString = users.getImagePath();
-                type = users.getType();
-                date = users.getDate();
-            }
-        });
-        details.setLongitude(longitude);
-        details.setLatitude(latitude);
-        details.setSurName(srname);
-        details.setSecondName(sname);
-        details.setContact(contacts);
-        details.setFirstName(fname);
-        details.setImagePath(imageString);
-        details.setType(type);
-        details.setDate(date);
-        reference.set(details);
         list = new ArrayList<>();
         list.add(new prepareC("Products"));
-        list.add(new prepareC("Enquiries"));
+
         list.add(new prepareC("Subscriptions"));
         list.add(new prepareC("Orders"));
         dashboard = new suppliersDashRecy(this, list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(dashboard);
         recyclerView.setHasFixedSize(true);
+    }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Intent startorder = new Intent(Homes.this, OrderNotification.class);
+        startService(startorder);
+        setContentView(R.layout.activity_homes);
+        sqlite sqlite = new sqlite(this);
+        userdId = sqlite.getUser();
+        firestore = FirebaseFirestore.getInstance();
+        recyclerView = findViewById(R.id.recyclerview);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Supplier");
+        //Products,Enquiries,Subscriptions,Order
+        firestore = FirebaseFirestore.getInstance();
+        businesName = firestore.collection("BusinessName").document(userdId);
     }
 
     @Override
@@ -183,6 +151,12 @@ public class Homes extends AppCompatActivity {
                 AlertDialog dialog = builder.create();
                 dialog.show();
                 break;
+            case R.id.totesta:
+                Intent intents=new Intent(getApplicationContext(),location2.class);
+                startService(intents);
+                Intent intenttest=new Intent(getApplicationContext(),Testlocation.class);
+                startActivity(intenttest);
+                break;
         }
         return super.onOptionsItemSelected(item);
 
@@ -195,5 +169,6 @@ public class Homes extends AppCompatActivity {
             unregisterReceiver(broadcastReceiver);
         }
     }
+
 }
 /* */

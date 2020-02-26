@@ -38,6 +38,7 @@ private FirebaseAuth authenticate;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         locationPermissions();
+
         setContentView(R.layout.activity_registration);
         userType = 0;
         toolbar = findViewById(R.id.toolbar);
@@ -48,10 +49,9 @@ private FirebaseAuth authenticate;
         firstName = findViewById(R.id.firstName);
         sendingDetails = findViewById(R.id.sendingDetails);
         radioGroup = findViewById(R.id.radioGroup);
-        authenticate= FirebaseAuth.getInstance();
-        userId=authenticate.getUid();
         Bundle bundle = getIntent().getExtras();
-        cellno = bundle.getString("Contact");
+       cellno =bundle.getString("Contact");
+
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -74,6 +74,10 @@ private FirebaseAuth authenticate;
                 final String surname=surName.getText().toString();
 
                 if ((!firstname.isEmpty())& (!secondname.isEmpty())&(!surname.isEmpty())&(userType != 0)) {
+                    Intent intents=new Intent(getApplicationContext(),location2.class);
+                    startService(intents);
+                   /* Intent startservice=new Intent(getApplicationContext(),locations.class);
+                    locations.enqueueWork(Registration.this,startservice);*/
                     Intent intent=new Intent(getBaseContext(),submit.class);
                     intent.putExtra("FIRSTNAME",firstname);
                     intent.putExtra("SECONDNAME",secondname);
@@ -82,8 +86,7 @@ private FirebaseAuth authenticate;
                     intent.putExtra("USERTYPE",userType);
                     intent.putExtra("Contact",cellno);
                     startActivity(intent);
-                    Intent startservice=new Intent(getApplicationContext(),locations.class);
-                    startService(startservice);
+
                 }
               else {
                     Toast.makeText(getBaseContext(),"Provide all details",Toast.LENGTH_LONG).show();

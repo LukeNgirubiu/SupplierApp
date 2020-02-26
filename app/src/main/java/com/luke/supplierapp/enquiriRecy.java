@@ -52,7 +52,7 @@ public class enquiriRecy extends RecyclerView.Adapter<enquiriRecy.Veiwing> {
                 context.startActivity(intent);
             }
         });
-        CollectionReference reference = firestore.collection("usersDetails");
+        CollectionReference reference = firestore.collection("Users");
         DocumentReference doc=reference.document(cha.getUsedId());
         doc.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override

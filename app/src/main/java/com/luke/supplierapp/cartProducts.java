@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.collect.Iterators;
@@ -32,64 +33,40 @@ public class cartProducts extends AppCompatActivity {
     private FirebaseFirestore firestore;
     private FloatingActionButton floating;
     private CollectionReference collect;
+    private Toolbar toolbar;
     private List<cartProductSet> list;
     private cartProductsRecy products;
-    private String Id, orderId;
+   private String Id,orderId;
     private RecyclerView recyclerView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart_products);
         firestore = FirebaseFirestore.getInstance();
-        floating = findViewById(R.id.recycler);
+        floating = findViewById(R.id.order);
+        toolbar=findViewById(R.id.toobar);
+         setSupportActionBar(toolbar);
+         getSupportActionBar().setTitle("Cart products");
         recyclerView = findViewById(R.id.recycler);
         Bundle bundle = getIntent().getExtras();
-        Id = bundle.getString("id");
+       Id = bundle.getString("Id");
+      //  catogory=bundle.getString("category");
         LinearLayoutManager manage = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manage);
         DividerItemDecoration divide = new DividerItemDecoration(this, manage.getOrientation());
         recyclerView.addItemDecoration(divide);
-        sqlite sql = new sqlite(this);
         list = new ArrayList<>();
-        final CollectionReference refer2 = firestore.collection("Cart").document(sql.getUser()).collection("products");
-        refer2.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                for (QueryDocumentSnapshot query : queryDocumentSnapshots) {
-                    if (queryDocumentSnapshots.size() != 0) {
-                        cartProductSet setproduct = query.toObject(cartProductSet.class);
-                        setproduct.setProductId(query.getId());
-                        list.add(setproduct);
-                    } else {
-                        AlertDialog alert = new AlertDialog.Builder(getBaseContext()).create();
-                        alert.setTitle("Cart products");
-                        alert.setIcon(R.drawable.cart1);
-                        alert.setMessage("No products");
-                        alert.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                        alert.show();
-                    }
-                }
-                products = new cartProductsRecy(list, getBaseContext());
-                recyclerView.setAdapter(products);
-            }
-        });
+
         recyclerView.setHasFixedSize(true);
         floating.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sqlite sql = new sqlite(getBaseContext());
-                CollectionReference reference;
-
+                final CollectionReference reference;
                 long totalCost = 0;
                 for (cartProductSet product : list) {
                     totalCost = totalCost + product.getTotal();
                 }
+                final sqlite sql = new sqlite(getBaseContext());
                 setQrders order = new setQrders();
                 order.setCustomerId(sql.getUser());
                 order.setSupplierId(Id);
@@ -97,7 +74,6 @@ public class cartProducts extends AppCompatActivity {
                 order.setBuyer(0);
                 order.setNotified(false);
                 order.setSeller(0);
-                order.setNotified(false);
                 order.setProductPrice(totalCost);
                 reference = firestore.collection("Orders");
 
@@ -105,40 +81,68 @@ public class cartProducts extends AppCompatActivity {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         orderId = documentReference.getId();
-                    }
-                });
-                CollectionReference collect = reference.document(orderId).collection("products");
-                DocumentReference addingDoc;
-                cartProductSet enter=new cartProductSet();
-                for (cartProductSet prodct : list) {
-                    enter.setTotal(prodct.getTotal());
-                    enter.setUnits(prodct.getUnits());
-                    enter.setProductName(prodct.getProductName());
-                    enter.setCategoryId(prodct.getCategoryId());
-                    enter.setProductPrice(prodct.getProductPrice());
-                    enter.setQuantity(prodct.getQuantity());
-                    addingDoc=collect.document(prodct.getProductId());
-                    addingDoc.set(enter).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(getBaseContext(),"Order posted",Toast.LENGTH_SHORT).show();
+                        CollectionReference collect = reference.document(orderId).collection("products");
+                        DocumentReference addingDoc;
+                        cartProductSet enter=new cartProductSet();
+                        for (cartProductSet prodct : list) {
+                            enter.setTotal(prodct.getTotal());
+                            enter.setUnits(prodct.getUnits());
+                            enter.setProductName(prodct.getProductName());
+                            enter.setCategoryId(prodct.getCategoryId());
+                            enter.setProductPrice(prodct.getProductPrice());
+                            enter.setQuantity(prodct.getQuantity());
+                            addingDoc=collect.document(prodct.getProductId());
+                            addingDoc.set(enter);
+                            DocumentReference collectionReference = firestore.collection("Cart").
+                                    document(sql.getUser()).collection(Id).document(prodct.getProductId());
+                            collectionReference.delete();
                         }
-                    });
-                }
-                DocumentReference refering = firestore.collection("Cart").document(sql.getUser());
-                refering.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(getBaseContext(),"Order sent",Toast.LENGTH_SHORT).show();
-                        Intent backtoProducts=new Intent(getBaseContext(),productsShow.class);
-                        startActivity(backtoProducts);
+                        list.clear();
+                        Toast.makeText(getBaseContext(),"Order posted",Toast.LENGTH_SHORT).show();
 
+                        DocumentReference refering = firestore.collection("Cart").document(sql.getUser());
+                        refering.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(getBaseContext(),"Order sent",Toast.LENGTH_SHORT).show();
+                                Intent backtoProducts=new Intent(getBaseContext(),Homec.class);
+                                startActivity(backtoProducts);
+                                DocumentReference dc=firestore.collection("Carting").document(sql.getUser())
+                                        .collection("cart").document(Id);
+                                dc.delete();
+
+                            }
+                        });
                     }
                 });
-                list.clear();
-                Intent toShowProducts = new Intent(getBaseContext(), productsShow.class);
-                startActivity(toShowProducts);
+
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        final sqlite sql = new sqlite(this);
+        CollectionReference refer2= firestore.collection("Cart").
+                document(sql.getUser()).collection(Id);
+        refer2.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                                       @Override
+                                       public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                           list.clear();
+                                           if (queryDocumentSnapshots.size() != 0) {
+                                               for (QueryDocumentSnapshot query : queryDocumentSnapshots) {
+                                                   cartProductSet setproduct = query.toObject(cartProductSet.class);
+                                                   setproduct.setProductId(query.getId());
+                                                   list.add(setproduct);
+                                               } products = new cartProductsRecy(list, getBaseContext(),"allow");
+                                               recyclerView.setAdapter(products);}
+                                           else {
+                                               Toast.makeText(getBaseContext(),"No products",Toast.LENGTH_SHORT).show();
+                                           }
+                                       }
+
+                                   }
+        );
     }
 }

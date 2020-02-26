@@ -7,16 +7,24 @@
         <item name="colorPrimaryDark">@color/appColor</item>
         <item name="colorAccent">@color/appColor</item>
     </style>
-<style name="sendButton">
-    <item name="android:background">@drawable/round</item>
+
+    <style name="sendButton">
+        <item name="android:background">@drawable/round</item>
     </style>
+
     <style name="items">
         <item name="android:background">@drawable/circular</item>
     </style>
+
     <style name="textArea">
         <item name="android:background">@drawable/textarea</item>
     </style>
+
     <style name="chat">
         <item name="android:background">@drawable/chatbox</item>
     </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

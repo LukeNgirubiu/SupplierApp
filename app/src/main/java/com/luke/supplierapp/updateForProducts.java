@@ -20,6 +20,7 @@ private EditText productname,prodquant,productp,unit;
 private Button send;
 private  BroadcastReceiver broadcastReceiver;
 private long price,prodq;
+    private CollectionReference collectionReference;
 private FirebaseFirestore firestore;
 private Double Longitude,Latitude;
 private String prodname,Units,category,Id,picture;
@@ -41,6 +42,7 @@ private String prodname,Units,category,Id,picture;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_for_products);
+        firestore=FirebaseFirestore.getInstance();
          productname = findViewById(R.id.productName);
         prodquant = findViewById(R.id.quantity);
          productp = findViewById(R.id.prodPrice);
@@ -58,12 +60,11 @@ private String prodname,Units,category,Id,picture;
         prodquant.setText(Long.toString(prodq));
         productp.setText(Long.toString(price));
         unit.setText(Units);
+        collectionReference = firestore.collection("Category").document(category).collection("category");
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sqlite sql=new sqlite(getBaseContext());
-
-                final CollectionReference collectionReference = firestore.collection("Category").document(category).collection("category");
                 DocumentReference prodC = firestore.collection("Products").document(sql.getUser()).collection("products").document(Id);
                 if((productname.getText().toString().length()>3)&(prodquant.getText().toString().length()>0)&(productp .getText().toString().length()>1)&(unit.getText().toString().length()>0)){
                     DocumentReference doc = collectionReference.document(sql.getUser());

@@ -22,16 +22,20 @@
         android:layout_gravity="bottom|end"
         android:src="@drawable/cart1"
         android:visibility="invisible"
+        app:layout_anchorGravity="top|end"
         android:layout_marginEnd="30dp"
         android:scaleType="fitXY"
         android:layout_marginBottom="10dp"/>
     <TextView
+        android:id="@+id/order"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_anchor="@id/order"
+        app:layout_anchor="@id/respond"
+        android:visibility="invisible"
         android:background="@android:color/holo_red_dark"
         app:layout_anchorGravity="top|end"
         android:elevation="10dp"
         android:textColor="@android:color/white"
-        android:text="Respond"/>
+        android:text="Order"
+        />
 </android.support.design.widget.CoordinatorLayout>

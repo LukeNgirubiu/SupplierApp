@@ -9,8 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -43,7 +45,8 @@ public class categoryRecy extends RecyclerView.Adapter<categoryRecy.Viewing> {
         final categoryItems item = list.get(position);
         holder.categoryName.setText(item.getCategoryName());
         if (dec == 1) {
-            FirebaseFirestore referece = FirebaseFirestore.getInstance();
+            number = 0;
+            final FirebaseFirestore referece = FirebaseFirestore.getInstance();
             CollectionReference collectionReference = referece.collection("Category").document(item.getCategoryId()).collection("category");
             collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
@@ -51,7 +54,13 @@ public class categoryRecy extends RecyclerView.Adapter<categoryRecy.Viewing> {
                     QuerySnapshot queries = task.getResult();
                     number = queries.size();
                     if (number > 0) {
-                        holder.numberOfSuppliers.setText(Integer.toString(number) + " suppliers");
+                        String supply;
+                        if (number == 1) {
+                            supply = " supplier";
+                        } else {
+                            supply = " suppliers";
+                        }
+                        holder.numberOfSuppliers.setText(Integer.toString(number) + supply);
                     } else {
                         holder.numberOfSuppliers.setText("Suppliers not availabe");
                     }
@@ -61,22 +70,29 @@ public class categoryRecy extends RecyclerView.Adapter<categoryRecy.Viewing> {
             holder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (number > 0) {
-                        Intent intent = new Intent(context, customerSupplier.class);
-                        intent.putExtra("Determiner", 2);
-                        intent.putExtra("categoryId", item.getCategoryId());
-                        context.startActivity(intent);
-                    }
+                    CollectionReference collectionReference = referece.collection("Category").document(item.getCategoryId()).collection("category");
+                    collectionReference.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            number=queryDocumentSnapshots.size();
+                            if(number>0){
+                                Intent intent = new Intent(context, customerSupplier.class);
+                                intent.putExtra("Determiner", 2);
+                                intent.putExtra("categoryId", item.getCategoryId());
+                                context.startActivity(intent);}
+                        }
+                    });
+
                 }
+
             });
-        }
-        else{
+        } else {
             holder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent add=new Intent(context,addProduct.class);
-                    add.putExtra("categoryId",item.getCategoryId());
-                    add.putExtra("categoryName",item.getCategoryName());
+                    Intent add = new Intent(context, addProduct.class);
+                    add.putExtra("categoryId", item.getCategoryId());
+                    add.putExtra("categoryName", item.getCategoryName());
                     context.startActivity(add);
                 }
             });

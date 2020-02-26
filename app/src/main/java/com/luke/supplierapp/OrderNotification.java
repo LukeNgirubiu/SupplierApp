@@ -5,15 +5,21 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.JobIntentService;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
@@ -34,23 +40,13 @@ public class OrderNotification extends Service {
     private CollectionReference reference, referenc;
     private FirebaseFirestore firestore;
     private String fname, sname;
+    private Double Altitude,longitude,latitude;
     private List<setQrders> list;
+    private BroadcastReceiver broadcastReceiver;
     private DocumentReference collect;
     public static final String CHANNEL_ID = "SJTE19";
     public static final String CHANNEL_NAME = "Suppliers";
-
     public static final String CHANNEL_DESCRIPTION = "Supplier describe";
-
-    public OrderNotification() {
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent, flags, startId);
-        return START_NOT_STICKY;
-
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -91,31 +87,12 @@ public class OrderNotification extends Service {
                             compat.notify(time,notification);
                             break;
                     }
+
                 }
 
             }
         });
-for(setQrders oder:list){
-     collect = reference.document(oder.getOrderId());
-     setQrders nword=new setQrders();
-     nword.setProductPrice(oder.getProductPrice());
-     nword.setSeller(0);
-     nword.setSeen(false);
-     nword.setSupplierId(oder.getSupplierId());
-     nword.setCustomerId(oder.getCustomerId());
-     nword.setBuyer(0);
-     nword.setNotified(true);
-     nword.setDate(oder.getDate());
-     collect.set(nword);
-}
 
-    }
-
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
     }
 
     private Notification notifying() {
@@ -128,6 +105,20 @@ for(setQrders oder:list){
             Notification.Builder build = new Notification.Builder(getApplicationContext(), CHANNEL_NAME);
             return build.build();
         }
+        return null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (broadcastReceiver != null) {
+            unregisterReceiver(broadcastReceiver);
+        }
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
         return null;
     }
 }

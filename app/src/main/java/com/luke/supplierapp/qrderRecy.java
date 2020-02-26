@@ -1,13 +1,17 @@
 package com.luke.supplierapp;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -44,37 +48,38 @@ public class qrderRecy extends RecyclerView.Adapter<qrderRecy.Viewer> {
     @Override
     public void onBindViewHolder(@NonNull final Viewer holder, int position) {
         final setQrders orders = list.get(position);
-        FirebaseFirestore firestore=FirebaseFirestore.getInstance();
-        holder.phonecontact.setText(Long.toString(orders.getProductPrice()));
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        holder.phonecontact.setText("Ksh " + Long.toString(orders.getProductPrice()));
         if (userType.equals("customerId")) {
-            DocumentReference reference=firestore.collection("usersDetails").document(orders.getSupplierId());
+            DocumentReference reference = firestore.collection("Users").document(orders.getSupplierId());
             reference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    userDetails details=documentSnapshot.toObject(userDetails.class);
-                    Picasso.get().load(details.getImagePath()).into(holder.circleImageView);
-                    holder.sdName.setText(details.getSecondName());
-                    holder.frName.setText(details.getFirstName());
-                }
-            });}
-            else {
-            DocumentReference reference=firestore.collection("usersDetails").document(orders.getCustomerId());
-            reference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    userDetails details=documentSnapshot.toObject(userDetails.class);
+                    userDetails details = documentSnapshot.toObject(userDetails.class);
                     Picasso.get().load(details.getImagePath()).into(holder.circleImageView);
                     holder.sdName.setText(details.getSecondName());
                     holder.frName.setText(details.getFirstName());
                 }
             });
+            holder.seen.setText("");
+        } else {
+            DocumentReference reference = firestore.collection("Users").document(orders.getCustomerId());
+            reference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    userDetails details = documentSnapshot.toObject(userDetails.class);
+                    Picasso.get().load(details.getImagePath()).into(holder.circleImageView);
+                    holder.sdName.setText(details.getSecondName());
+                    holder.frName.setText(details.getFirstName());
+                }
+            });
+            if (orders.isSeen()) {
+                holder.seen.setText("");
+            } else {
+                holder.seen.setText("New");
+            }
         }
-           if(orders.isSeen()){
-               holder.seen.setText("seen");
-           }
-           else {
-               holder.seen.setText("");
-           }
+
 
         //set for the case of supplier
         Calendar calendar = getInstance();
@@ -88,8 +93,8 @@ public class qrderRecy extends RecyclerView.Adapter<qrderRecy.Viewer> {
         int year1 = calendar1.get(Calendar.YEAR);
         int month1 = calendar1.get(Calendar.MONTH);
         int day1 = calendar1.get(Calendar.DATE);
-        int hour1=calendar1.get(Calendar.HOUR_OF_DAY);
-        int min1=calendar1.get(Calendar.MINUTE);
+        int hour1 = calendar1.get(Calendar.HOUR_OF_DAY);
+        int min1 = calendar1.get(Calendar.MINUTE);
 
         String[] monthsNames = {"January", " February", "March", "April", "May", "June", "July", "August", "September", "Octomber", "November", "December"};
         if (year == year1) {
@@ -97,22 +102,26 @@ public class qrderRecy extends RecyclerView.Adapter<qrderRecy.Viewer> {
                 if (day == day1) {
                     String h = Integer.toString(hour);
                     String m = Integer.toString(minute);
-                    if((day==day1)&&(hour==hour1)&&(minute==min1)){
+                    if ((day == day1) && (hour == hour1) && (minute == min1)) {
                         holder.ordertime.setText("Now");
+                    } else {
+                        if (minute < 10) {
+                            holder.ordertime.setText("Yesterday" + " " + h + ":" + "0" + m);
+                        } else {
+                            holder.ordertime.setText("Today" + " " + h + ":" + m);
+                        }
                     }
-                    else {
-                    if (minute<10){
-                        holder.ordertime.setText("Yesterday" + " " + h + ":" +"0"+ m);}
-                    else {holder.ordertime.setText("Today" + " " + h + ":" + m);}}
                 } else if (day == day1 - 1) {
                     String h = Integer.toString(hour);
                     String m = Integer.toString(minute);
-                    if (minute<10){
-                    holder.ordertime.setText("Yesterday" + " " + h + ":" +"0"+ m);}
-                    else {holder.ordertime.setText("Today" + " " + h + ":" + m);}
+                    if (minute < 10) {
+                        holder.ordertime.setText("Yesterday" + " " + h + ":" + "0" + m);
+                    } else {
+                        holder.ordertime.setText("Today" + " " + h + ":" + m);
+                    }
                 } else {
                     String h = Integer.toString(month);
-                    holder.ordertime.setText("This month " + "on " + day+ "th");
+                    holder.ordertime.setText("This month " + "on " + day + "th");
                 }
 
             } else {
@@ -125,13 +134,50 @@ public class qrderRecy extends RecyclerView.Adapter<qrderRecy.Viewer> {
             String h = Integer.toString(day);
             holder.ordertime.setText(h + " " + monthsNames[month] + " " + year);
         }
+        holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                sqlite se = new sqlite(context);
+                if (userType.equals("customerId") && (se.getUser().equals(orders.getCustomerId()))) {
+                    PopupMenu pop = new PopupMenu(context, holder.cardView);
+                    pop.inflate(R.menu.removeorder);
+                    pop.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            builder.setTitle("Delete the Order");
+                            builder.setMessage("Continue with deleting the order?");
+                            builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    FirebaseFirestore firestore=FirebaseFirestore.getInstance();
+                                   DocumentReference reference = firestore.collection("Orders").document(orders.getOrderId());
+                                   reference.delete();
+                                }
+                            });
+                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                            AlertDialog alert = builder.create();
+                            alert.show();
+                            return false;
+                        }
+                    });
+                }
+                return true;
+            }
+        });
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent productsOrder=new Intent(context,Products.class);
-                productsOrder.putExtra("orderId",orders.getOrderId());
-                context.startActivity(productsOrder);
-            }
+                sqlite se = new sqlite(context);
+                Intent productsOrder;
+                 productsOrder = new Intent(context, Products.class);
+                productsOrder.putExtra("orderId", orders.getOrderId());
+                context.startActivity(productsOrder);}
         });
 
     }

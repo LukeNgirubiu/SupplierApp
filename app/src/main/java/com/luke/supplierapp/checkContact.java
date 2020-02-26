@@ -29,6 +29,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.concurrent.TimeUnit;
@@ -94,7 +95,10 @@ public class checkContact extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 cellNumber = cellPhoneNumber.getText().toString();
-                if (cellNumber.length() == 13) {
+                if(cellNumber.isEmpty()){
+                    Toast.makeText(getBaseContext(), "Enter your phone number", Toast.LENGTH_SHORT).show();
+                }
+                else if(cellNumber.length() == 13) {
                     Toast.makeText(getBaseContext(), "Wait for code", Toast.LENGTH_SHORT).show();
                     PhoneAuthProvider.getInstance().verifyPhoneNumber(cellNumber, 80, TimeUnit.SECONDS, checkContact.this, callbacks);
                 } else {
@@ -126,39 +130,41 @@ public class checkContact extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    userId = task.getResult().getUser().getUid();
-                    Toast.makeText(getBaseContext(),userId,Toast.LENGTH_SHORT).show();
-                    DocumentReference getting = firestore.collection("usersDetails").document(userId);
-                    getting.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            if (documentSnapshot.exists()) {
-                                userDetails details = documentSnapshot.toObject(userDetails.class);
+                CollectionReference getting=firestore.collection("Users");
+                getting.whereEqualTo("contact",cellNumber).limit(1).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            if(!queryDocumentSnapshots.isEmpty()){
+                                for(QueryDocumentSnapshot doc:queryDocumentSnapshots){
+                            if(doc.exists()){
+
+                            String id=doc.getId();
+                                userDetails details = doc.toObject(userDetails.class);
                                 int type = details.getType();
+                                sqlite sql = new sqlite(getApplicationContext());
+                                sql.addId(id);
                                 if (type == 1) {
                                     Intent intents = new Intent(getBaseContext(), Homes.class);
-                                    intents.putExtra("Id", userId);
                                     startActivity(intents);
-
+                                    finishAffinity();
                                 }
                                 if (type == 2) {
                                     Intent intentc = new Intent(getBaseContext(), Homec.class);
-                                    intentc.putExtra("Id", userId);
                                     startActivity(intentc);
+                                    finishAffinity();
                                 }
-                            } else {
+                            }
+                        }
+                            }
+                            else
+                            {
                                 Intent intents = new Intent(getBaseContext(), Registration.class);
                                 intents.putExtra("Contact", cellNumber);
                                 startActivity(intents);
-
                             }
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
+                    }
+                });
 
-                        }
-                    });
                 }
                 else{
 
@@ -169,3 +175,8 @@ public class checkContact extends AppCompatActivity {
     }
 }
 
+/*  if (documentSnapshot.exists()) {
+
+                            } else {
+
+                            }*/

@@ -4,6 +4,7 @@
 
     <uses-feature android:name="android.hardware.location.network" />
 
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.SEND_SMS" />
@@ -44,7 +45,8 @@
         <service
             android:name=".locations"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <activity android:name=".addProduct" />
         <activity android:name=".addingImage" />
@@ -55,7 +57,19 @@
             android:exported="true" />
 
         <activity android:name=".submit" />
-        <activity android:name=".updateForProducts"></activity>
+        <activity android:name=".updateForProducts" />
+
+        <service
+            android:name=".location2"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity
+            android:name=".Testlocation"
+            android:label="@string/title_activity_testlocation"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".Cart"/>
+        <activity android:name=".CartUpdate"/>
     </application>
 
 </manifest>

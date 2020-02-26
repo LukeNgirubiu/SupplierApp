@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
@@ -29,8 +30,9 @@ public class Products extends AppCompatActivity {
     private List<cartProductSet> list;
     private RecyclerView recyclerView;
     private cartProductsRecy products;
-    private String id;
+    private String id,userId;
     private Toolbar toolbar;
+    private TextView order;
     private FloatingActionButton floater;
 
     @Override
@@ -40,7 +42,9 @@ public class Products extends AppCompatActivity {
         firestore = FirebaseFirestore.getInstance();
         Bundle bundle = getIntent().getExtras();
         id = bundle.getString("orderId");
+        userId=bundle.getString("userId");
         toolbar = findViewById(R.id.toolbar);
+        order=findViewById(R.id.order);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Ordered products");
         toolbar.setTitleTextColor(Color.WHITE);
@@ -52,13 +56,14 @@ public class Products extends AppCompatActivity {
         DividerItemDecoration divide = new DividerItemDecoration(this, manage.getOrientation());
         recyclerView.addItemDecoration(divide);
         sqlite sql = new sqlite(getApplicationContext());
-        DocumentReference gettype = firestore.collection("usersDetails").document(sql.getUser());
+        DocumentReference gettype = firestore.collection("Users").document(sql.getUser());
         gettype.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 userDetails usa = documentSnapshot.toObject(userDetails.class);
                 if (usa.getType() == 1) {
                     floater.setVisibility(View.VISIBLE);
+                    order.setTextColor(View.VISIBLE);
                 }
             }
         });
@@ -71,7 +76,7 @@ public class Products extends AppCompatActivity {
                     setproduct.setProductId(query.getId());
                     list.add(setproduct);
                 }
-                products = new cartProductsRecy(list, getBaseContext());
+                products = new cartProductsRecy(list, getBaseContext(),"not");
                 recyclerView.setAdapter(products);
             }
         });

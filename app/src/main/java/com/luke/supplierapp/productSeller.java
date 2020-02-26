@@ -1,6 +1,9 @@
 package com.luke.supplierapp;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -30,14 +33,23 @@ public class productSeller extends AppCompatActivity {
     private Toolbar toolbar;
     private FirebaseFirestore firestore;
     private DocumentReference refering;
-    FirebaseAuth auth;
     private FloatingActionButton product;
-    CollectionReference reference;
+    private CollectionReference reference;
+    private Double Longitude,Latitude;
     private List<productSet> products;
     private RecyclerView recyclerView;
     private productSellerRecy prodc;
+    private BroadcastReceiver broadcastReceiver;
     private String userId;
+    int type;
     private FloatingActionButton action;
+    private sqlite sqlite;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        whereNoCategory();
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,31 +58,29 @@ public class productSeller extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         product = findViewById(R.id.productitem);
         action=findViewById(R.id.productitem);
-        auth=FirebaseAuth.getInstance();
-        userId=auth.getUid();
-        refering=firestore.collection("Particulars").document(userId);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Products");
+        sqlite = new sqlite(this);
+        userId=sqlite.getUser();
+        firestore = FirebaseFirestore.getInstance();
+        Intent intent=new Intent(getApplicationContext(),location2.class);
+        startService(intent);
+       refering=firestore.collection("Users").document(userId);
         refering.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if(documentSnapshot.exists()){
-                    userDetails user=documentSnapshot.toObject(userDetails.class);
-                    if(user.getType()==2){
-                        action.setVisibility(View.INVISIBLE);
-                    }
+                userDetails users = documentSnapshot.toObject(userDetails.class);
+                type=users.getType();
+                if(type==2){
+                    action.setVisibility(View.VISIBLE);
                 }
-
             }
         });
 
-        firestore = FirebaseFirestore.getInstance();
-        sqlite sqlite = new sqlite(this);
-        reference = firestore.collection("Products").document(sqlite.getUser()).collection("products");
+        reference = firestore.collection("Products").document(userId).collection("products");
         products = new ArrayList<>();
         recyclerView = findViewById(R.id.recyclerview);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Products");
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
-        whereNoCategory();
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         action.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,10 +91,13 @@ public class productSeller extends AppCompatActivity {
         });
     }
 
+
+
     private void whereNoCategory() {
         reference.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                products.clear();
                 if(!queryDocumentSnapshots.isEmpty()){
                 for (QueryDocumentSnapshot query : queryDocumentSnapshots) {
                     productSet product = query.toObject(productSet.class);
@@ -98,7 +111,7 @@ public class productSeller extends AppCompatActivity {
                 }}
         });
 
-        recyclerView.setHasFixedSize(true);
+
     }
 
 

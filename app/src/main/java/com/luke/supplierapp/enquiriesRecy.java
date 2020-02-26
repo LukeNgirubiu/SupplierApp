@@ -1,7 +1,9 @@
 package com.luke.supplierapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
@@ -25,11 +28,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static java.util.Calendar.getInstance;
 
 public class enquiriesRecy extends RecyclerView.Adapter<enquiriesRecy.Viewing> {
-    private List<setEnquire> list;
+    private List<setEnqChat> list;
     private Context context;
-    String imagepath;
 
-    public enquiriesRecy(List<setEnquire> list, Context context) {
+
+    public enquiriesRecy(List<setEnqChat> list,Context context) {
         this.list = list;
         this.context = context;
     }
@@ -43,23 +46,20 @@ public class enquiriesRecy extends RecyclerView.Adapter<enquiriesRecy.Viewing> {
 
     @Override
     public void onBindViewHolder(@NonNull final Viewing holder, int position) {
-        setEnquire enq = list.get(position);
-        sqlite st = new sqlite(context);
+        final setEnqChat enq = list.get(position);
+        final sqlite st = new sqlite(context);
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        CollectionReference reference = firestore.collection("usersDetails");
-        DocumentReference dc = reference.document(enq.getFromId());
-        dc.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                userDetails us = documentSnapshot.toObject(userDetails.class);
-                imagepath = us.getImagePath();
-                holder.lastN.setText(us.getSurName());
-            }
-        });
-        if (!st.getUser().equals(enq.getFromId())) {
-            Picasso.get().load(imagepath).into(holder.image);
-        }
-        holder.chatmessage.setText(enq.getMessage());
+        CollectionReference reference = firestore.collection("Users");
+DocumentReference getuser=reference.document(enq.getUsedId());
+getuser.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+    @Override
+    public void onSuccess(DocumentSnapshot documentSnapshot) {
+        userDetails users=documentSnapshot.toObject(userDetails.class);
+        holder.first_Name.setText(users.getFirstName());
+        holder.second_Name.setText(users.getSecondName());
+        Picasso.get().load(users.getImagePath()).into(holder.image);
+    }
+});
         Calendar calendar = getInstance();
         calendar.setTime(enq.getDate());
         int year = calendar.get(Calendar.YEAR);
@@ -84,7 +84,7 @@ public class enquiriesRecy extends RecyclerView.Adapter<enquiriesRecy.Viewing> {
                     holder.chattime.setText("Yesterday" + " " + h + ":" + m);
                 } else {
                     String h = Integer.toString(month);
-                    holder.chattime.setText("This month " + "on " + day+ "th");
+                    holder.chattime.setText("This month " + "on " + day + "th");
                 }
 
             } else {
@@ -97,6 +97,23 @@ public class enquiriesRecy extends RecyclerView.Adapter<enquiriesRecy.Viewing> {
             String h = Integer.toString(day);
             holder.chattime.setText(h + " " + monthsNames[month] + " " + year);
         }
+         CollectionReference collectionReference = firestore.collection("Cart").
+                document(st.getUser()).collection("cart");
+        collectionReference.whereEqualTo("sellerId",enq.getUsedId()).get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        holder.count.setText(Integer.toString(queryDocumentSnapshots.size()));
+                    }
+                });
+        holder.card.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(context,cartProducts.class);
+                intent.putExtra("Id",enq.getUsedId());
+                context.startActivity(intent);
+            }
+        });
 
     }
 
@@ -107,16 +124,18 @@ public class enquiriesRecy extends RecyclerView.Adapter<enquiriesRecy.Viewing> {
 
     public class Viewing extends RecyclerView.ViewHolder {
         CircleImageView image;
-        RelativeLayout chatlayout;
-        TextView lastN, chattime, chatmessage;
+        CardView card;
+        TextView first_Name, second_Name, count, chattime;
 
         public Viewing(View itemView) {
             super(itemView);
-            chatlayout = itemView.findViewById(R.id.chatLayout);
-            image = itemView.findViewById(R.id.image);
-            lastN = itemView.findViewById(R.id.lastName);
-            chattime = itemView.findViewById(R.id.time);
-            chatmessage = itemView.findViewById(R.id.text);
+            image = itemView.findViewById(R.id.profile);
+            first_Name = itemView.findViewById(R.id.firstName);
+            second_Name = itemView.findViewById(R.id.secondName);
+            count = itemView.findViewById(R.id.count);
+            chattime = itemView.findViewById(R.id.date);
+            card=itemView.findViewById(R.id.cards);
+
         }
     }
 }

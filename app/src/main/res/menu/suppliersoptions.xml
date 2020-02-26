@@ -7,5 +7,7 @@
         android:title="Change Business Name"
         />
     <item android:id="@+id/contact"
-        android:title="Change Contact"/>
+        android:title="Add Contact"/>
+    <item android:id="@+id/totesta"
+        android:title="Service"/>
 </menu>

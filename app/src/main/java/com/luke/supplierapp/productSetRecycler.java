@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,14 +28,15 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 public class productSetRecycler extends RecyclerView.Adapter<productSetRecycler.Veiwing> {
-    private List<productSet> products;
-    private Context context;
-    private String id;
+    public List<productSet> products;
+    public Context context;
+    public String Id;
 
-    public productSetRecycler(List<productSet> products, Context context, String id) {
+    public productSetRecycler(List<productSet> products, Context context, String Id) {
         this.products = products;
         this.context = context;
-        this.id = id;
+        this.Id = Id;
+
     }
 
     @NonNull
@@ -62,75 +64,34 @@ public class productSetRecycler extends RecyclerView.Adapter<productSetRecycler.
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         int id = item.getItemId();
-                        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-                        sqlite sql = new sqlite(context);
-                        final DocumentReference collectionReference = firestore.collection("Cart").
-                                document(sql.getUser()).collection("cart").document(setProduct.getProductId());
-                        final DocumentReference refer2 = firestore.collection("Cart").document(sql.getUser());
-
                         if (id == R.id.buy) {
-                            AlertDialog.Builder alert = new AlertDialog.Builder(context);
-                            LayoutInflater inflating = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                            View view = inflating.inflate(R.layout.cart, null);
-                            final TextView totalcost = view.findViewById(R.id.totalcost);
-                            final TextView productsname = view.findViewById(R.id.productName);
-                            final EditText quantity = view.findViewById(R.id.quantity);
-                            Button send = view.findViewById(R.id.addingProducts);
+                            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+                            sqlite sql = new sqlite(context);
+                            final DocumentReference collectionReference = firestore.collection("Cart").
+                                    document(sql.getUser()).collection("cart").document(setProduct.getProductId());
                             collectionReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    if (documentSnapshot.exists()) {
-                                        cartProductSet productset = documentSnapshot.toObject(cartProductSet.class);
-                                        productsname.setText(productset.getProductName());
-                                        quantity.setText(Long.toString(productset.getQuantity()));
+                                    if(documentSnapshot.exists()){
+                                        Toast.makeText(context,"The product already available in the cart",Toast.LENGTH_LONG).show();
+                                    Intent intent = new Intent(context, Cart.class);
+                                    intent.putExtra("productid", setProduct.getProductId());
+                                    intent.putExtra("userId",Id);
+                                    context.startActivity(intent);
+                                } else{
+                                        Intent intent = new Intent(context, Cart.class);
+                                        intent.putExtra("productid", setProduct.getProductId());
+                                        intent.putExtra("userId",Id);
+                                        context.startActivity(intent);
+                                    }}
+                            });
 
-                                    } else {
-                                        productsname.setText(setProduct.getProductName());
-                                    }
-                                }
-                            });
-                            refer2.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    if (documentSnapshot.exists()) {
-                                        setQrders order = documentSnapshot.toObject(setQrders.class);
-                                        totalcost.setText(Long.toString(order.getProductPrice()));
-                                    }
-                                }
-                            });
-                            send.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    String quant = quantity.getText().toString().trim();
-                                    if (!quant.isEmpty()) {
-                                        if (setProduct.getQuantity() >= Long.parseLong(quant)) {
-                                            cartProductSet cart = new cartProductSet();
-                                            cart.setCategoryId(setProduct.getCategoryId());
-                                            cart.setProductName(setProduct.getProductName());
-                                            cart.setProductPrice(setProduct.getProductPrice());
-                                            cart.setQuantity(Long.parseLong(quant));
-                                            cart.setCategoryId(setProduct.getCategoryId());
-                                            cart.setUnits(setProduct.getUnits());
-                                            cart.setTotal(setProduct.getProductPrice() * Long.parseLong(quant));
-                                            collectionReference.set(cart);
-                                        } else {
-
-                                            Toast.makeText(context, "Product amount is not available", Toast.LENGTH_LONG).show();
-                                        }
-                                    } else {
-                                        Toast.makeText(context, "Enter amount", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-                            alert.setView(view);
-                            AlertDialog show = alert.create();
-                            show.show();
                         }
 
                         if (id == R.id.details) {
                             Intent intent = new Intent(context, productsImages.class);
                             intent.putExtra("productid", setProduct.getProductId());
-                            intent.putExtra("userId",id);
+                            intent.putExtra("userId",Id);
                             context.startActivity(intent);
                         }
 
@@ -149,7 +110,7 @@ public class productSetRecycler extends RecyclerView.Adapter<productSetRecycler.
 
     public class Veiwing extends RecyclerView.ViewHolder {
         CardView cardView;
-        AppCompatImageView imagings;
+        ImageView imagings;
         TextView productPrice, productQuantity, producName;
 
         public Veiwing(View itemView) {

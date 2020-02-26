@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.TextView;
@@ -48,44 +49,56 @@ public class addingImage extends AppCompatActivity {
         if (productImage != null) {
             imagestring.setText("Image added");
         }
-        refer.get().addOnSuccessListener(
-                new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (queryDocumentSnapshots.size() < 4) {
+        addimage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                productImage();
+            }
+        });
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                refer.get().addOnSuccessListener(
+                        new OnSuccessListener<QuerySnapshot>() {
+                            @Override
+                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                if (queryDocumentSnapshots.size() < 4) {
 
-                            final StorageReference save = store.child(System.currentTimeMillis() + "." + getPathExtension(productImage));
-                            save.putFile(productImage).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                                @Override
-                                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                                    if (!task.isSuccessful()) {
-                                        throw task.getException();
-                                    }
-                                    return save.getDownloadUrl();
-                                }
-                            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Uri> task) {
-                                    if (task.isSuccessful()) {
-                                        Images img = new Images();
-                                        img.setProductId(productId);
-                                        img.setImageString(task.getResult().toString());
-                                        refer.add(img).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                            @Override
-                                            public void onSuccess(DocumentReference documentReference) {
-                                                Toast.makeText(getBaseContext(), "Image added", Toast.LENGTH_SHORT).show();
+                                    final StorageReference save = store.child(System.currentTimeMillis() + "." + getPathExtension(productImage));
+                                    save.putFile(productImage).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                                        @Override
+                                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                                            if (!task.isSuccessful()) {
+                                                throw task.getException();
                                             }
-                                        });
-                                    }
+                                            return save.getDownloadUrl();
+                                        }
+                                    }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Uri> task) {
+                                            if (task.isSuccessful()) {
+                                                Images img = new Images();
+                                                img.setProductId(productId);
+                                                img.setImageString(task.getResult().toString());
+                                                refer.add(img).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                    @Override
+                                                    public void onSuccess(DocumentReference documentReference) {
+                                                        Toast.makeText(getBaseContext(), "Image added", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    });
                                 }
-                            });
+                                else{
+                                    Toast.makeText(getBaseContext(),"You cann't be added",Toast.LENGTH_SHORT).show();
+                                }
+                            }
                         }
-                        else{
-                            Toast.makeText(getBaseContext(),"You cann't be added",Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }
-        );
+                );
+            }
+        });
+      /*  */
     }
 
     public void productImage() {

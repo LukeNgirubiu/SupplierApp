@@ -1,5 +1,4 @@
 package com.luke.supplierapp;
-
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,7 +7,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -17,7 +15,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +41,6 @@ private Toolbar tool;
         firestore=FirebaseFirestore.getInstance();
         sqlite sql=new sqlite(this);
          CollectionReference collect=firestore.collection("Subscription").document(sql.getUser()).collection("subscription");
-
 collect.orderBy("seen", Query.Direction.DESCENDING).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
     @Override
     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {

@@ -11,18 +11,19 @@ public class setEnquire {
     private String enquiryId;
     @ServerTimestamp
     Date date;
-
+   private Boolean seen;
 
 
     public setEnquire() {
     }
 
-    public setEnquire(String fromId, String toId, String message, String enquiryId, Date date) {
+    public setEnquire(String fromId, String toId, String message, String enquiryId, Date date, Boolean seen) {
         this.fromId = fromId;
         this.toId = toId;
         this.message = message;
         this.enquiryId = enquiryId;
         this.date = date;
+        this.seen = seen;
     }
 
     public String getFromId() {
@@ -63,5 +64,13 @@ public class setEnquire {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public Boolean getSeen() {
+        return seen;
+    }
+
+    public void setSeen(Boolean seen) {
+        this.seen = seen;
     }
 }

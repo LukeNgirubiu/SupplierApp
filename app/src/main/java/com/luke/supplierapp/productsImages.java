@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
@@ -19,6 +20,7 @@ public class productsImages extends AppCompatActivity {
     private FirebaseFirestore firestore;
     private String userImage;
     private RecyclerView recyc;
+    String productId;
     private Toolbar toolbar;
     List<Images> imges;
     private imageShowRecy showRecy;
@@ -34,11 +36,13 @@ public class productsImages extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Product Photos");
         userImage = bundle.getString("userId");
+        productId=bundle.getString("productid");
         imges = new ArrayList<>();
+
         recyc.setLayoutManager(new LinearLayoutManager(this));
         CollectionReference refer = firestore.collection("Productimges").
-                document(bundle.getString("userId"))
-                .collection(bundle.getString("productid"));
+                document(userImage)
+                .collection(productId);
         refer.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {

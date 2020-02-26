@@ -3,6 +3,7 @@ package com.luke.supplierapp;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
@@ -42,14 +44,29 @@ private List<prepareC> list;
         holder.homeItem.setText(name.getCategory());
    if(name.getCategory().equals("My orders")){
     CollectionReference documentReference=dbreference.collection("Orders");
-   documentReference.whereEqualTo("buyerId",sqlit.getUser()).whereEqualTo("seen",false).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+   documentReference.whereEqualTo("buyerId",sqlit.getUser()).whereEqualTo("seen",false).get().
+           addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
     @Override
     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
         int number=queryDocumentSnapshots.size();
-        holder.quantity.setText(Integer.toString(number));
+        if(number>1){
+        holder.quantity.setText(Integer.toString(number));}
 
     }
 });
+}
+if(name.getCategory().equals("Carts")){
+    CollectionReference dc=dbreference.collection("Carting").document(sqlit.getUser())
+            .collection("cart");
+    dc.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        @Override
+        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+         int number=queryDocumentSnapshots.size();
+         if(number>0){
+             holder.quantity.setText(Integer.toString(number));
+         }
+        }
+    });
 }
 
 holder.cardView.setOnClickListener(new View.OnClickListener() {
@@ -67,15 +84,16 @@ holder.cardView.setOnClickListener(new View.OnClickListener() {
             context.startActivity(intent);
         }
         if(name.getCategory().equals("Categories")){
-            intent=new Intent(context,category.class);//Enquiry
+            intent=new Intent(context,category.class);
             intent.putExtra("dec",1);
             context.startActivity(intent);
         }
-
-        if(name.getCategory().equals("Enquiries")){
-            intent=new Intent(context,Enquiries.class);
+        if(name.getCategory().equals("Carts")){
+            intent=new Intent(context,Enquire.class);
             context.startActivity(intent);
         }
+
+
     }
 });
     }

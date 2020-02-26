@@ -32,12 +32,9 @@ Toolbar toolbar;
 Button button,send;
 private String firstname,secondname,surname,contact,path;
 private int type;
-
-FirebaseAuth authenticate;
-private String userId;
-private DocumentReference reference, contacts,referenc;
+private DocumentReference Contacts;
     private StorageReference storage;
-    private Double Longitude, Latitude;
+    private Double Longitude, Latitude,Altitude;
 userDetails users,user1;
 FirebaseFirestore firestore;
 private Uri profilePath;
@@ -50,12 +47,13 @@ private Uri profilePath;
             broadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    Longitude = intent.getDoubleExtra("Longi", 0);
-                    Latitude = intent.getDoubleExtra("Latit", 0);
+                    Longitude = intent.getDoubleExtra("Longitude", 0);
+                    Latitude = intent.getDoubleExtra("Latitude", 0);
+
                 }
             };
         }
-        registerReceiver(broadcastReceiver, new IntentFilter("Locations"));
+        registerReceiver(broadcastReceiver, new IntentFilter("Coordinates"));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +64,6 @@ private Uri profilePath;
         getSupportActionBar().setTitle("Registration");
         send=findViewById(R.id.send);
         button=findViewById(R.id.getimage);
-        users = new userDetails();
-        user1=new userDetails();
         firestore = FirebaseFirestore.getInstance();
         Bundle bundles=getIntent().getExtras();
         firstname=bundles.getString("FIRSTNAME");
@@ -75,13 +71,8 @@ private Uri profilePath;
         surname=bundles.getString("THIRDNAME");
         contact=bundles.getString("Contact");
         type=bundles.getInt("USERTYPE");
-         userId=bundles.getString("Id");
-        reference=firestore.collection("Particulars").document(userId);
-        referenc=firestore.collection("Doc").document("doc");
+        //referenc=firestore.collection("Doc").document(contact);
         storage = FirebaseStorage.getInstance().getReference("profiles");
-        contacts=firestore.collection("Contacts").document(userId);
-
-
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,77 +82,75 @@ private Uri profilePath;
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(profilePath!=null){
-                    Toast.makeText(getBaseContext(),"Please wait...",Toast.LENGTH_LONG).show();
-                    final StorageReference store = storage.child(System.currentTimeMillis() + "." + getPathExtension(profilePath));
-                    UploadTask uploadTask = store.putFile(profilePath);
-                    store.putFile(profilePath).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                        @Override
-                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                            return store.getDownloadUrl();
-                        }
-                    }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Uri> task) {
-                            path=task.getResult().toString();
-                            users.setContact(contact);
-                            users.setFirstName(firstname);
-                            users.setSecondName(secondname);
-                            users.setSurName(surname);
-                            users.setType(type);
-                            users.setImagePath(path);
-                            users.setLatitude(Latitude);
-                            users.setLongitude(Longitude);
-                            reference.set(users).addOnSuccessListener(new OnSuccessListener<Void>() {
-                               @Override
-                               public void onSuccess(Void aVoid) {
-                                   sqlite sql = new sqlite(getApplicationContext());
-                                   long s=sql.addId(userId);
-                                   if(s!=-1){
-                                       CollectionReference coll = firestore.collection("Cellphone");
-                                       DocumentReference cont = firestore.collection("Contacts").document(userId);
-                                       cellContacts contacts = new cellContacts();
-                                       contacts.setCellNo(contact);
-                                       cont.set(contacts);
-                                       contacts conts = new contacts();
-                                       conts.setUserId(userId);
-                                       conts.setContact(contact);
-                                       coll.add(conts);
-                                       user1.setContact(contact);
-                                       user1.setFirstName(firstname);
-                                       user1.setSecondName(secondname);
-                                       user1.setSurName(surname);
-                                       user1.setType(type);
-                                       user1.setImagePath(path);
-                                       user1.setLatitude(Latitude);
-                                       user1.setLongitude(Longitude);
-                                       referenc.set(user1);
-                                       //Toast.makeText(getApplicationContext(),"Registration successful"+Double.toString(Latitude),Toast.LENGTH_SHORT).show();
-                                       if (type == 1) {
-                                           Intent intent = new Intent(getBaseContext(), Homes.class);
-                                           startActivity(intent);
-                                           Intent startservice = new Intent(submit.this, OrderNotification.class);
-                                           startService(startservice);
-                                           finishAffinity();
-                                       } else {
-                                           Intent intent = new Intent(getBaseContext(), Homec.class);
-                                           startActivity(intent);
-                                           finishAffinity();
-                                       }
-                                   }
-                                   else{
-                                       Toast.makeText(getBaseContext(),"Failed",Toast.LENGTH_LONG).show();
-                                   }
-
-                               }
-                           });
-
-                        }
-
-                    });
-                }
+                uploaload();
             }
         });
+    }
+    public void uploaload(){
+        if(profilePath!=null) {
+        Toast.makeText(getBaseContext(),"Please wait...",Toast.LENGTH_LONG).show();
+        final StorageReference store = storage.child(System.currentTimeMillis() + "." + getPathExtension(profilePath));
+        UploadTask uploadTask = store.putFile(profilePath);
+        store.putFile(profilePath).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                return store.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if(task.isSuccessful()){
+                    CollectionReference reference=firestore.collection("Users");
+                    userDetails users = new userDetails();
+                    path=task.getResult().toString();
+                    users.setContact(contact);
+                    users.setFirstName(firstname);
+                    users.setSecondName(secondname);
+                    users.setSurName(surname);
+                    users.setType(type);
+                    users.setImagePath(path);
+                    users.setLatitude(Latitude);
+                    users.setLongitude(Longitude);
+                    reference.add(users).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            String id=documentReference.getId();
+                            sqlite sql = new sqlite(getApplicationContext());
+                            long s=sql.addId(id);
+                            if(s!=-1){
+                                CollectionReference coll = firestore.collection("Cellphone");
+                                DocumentReference cont = firestore.collection("Contacts").document(contact);
+                                cellContacts contacts = new cellContacts();
+                                contacts.setCellNo(contact);
+                                cont.set(contacts);
+                                contacts conts = new contacts();
+                                conts.setUserId(contact);
+                                conts.setContact(contact);
+                                coll.add(conts);
+                                sqlite sq=new sqlite(getBaseContext());
+                                Toast.makeText(getApplicationContext(),"Registration successful"+sq.getUser(),Toast.LENGTH_SHORT).show();
+                                if (type == 1) {
+                                    Intent startservice = new Intent(submit.this, OrderNotification.class);
+                                    startService(startservice);
+                                    Intent intent = new Intent(getBaseContext(), Homes.class);
+                                    startActivity(intent);
+                                    finishAffinity();
+                                } else {
+                                    Intent intent = new Intent(getBaseContext(), Homec.class);
+                                    startActivity(intent);
+                                    finishAffinity();
+                                }
+                            }
+                            else{
+                                Toast.makeText(getBaseContext(),"Failed",Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+
+                }}
+
+        });
+    }
     }
     public void profileImage() {
         Intent intent = new Intent();

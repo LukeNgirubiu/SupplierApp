@@ -1,7 +1,9 @@
 package com.luke.supplierapp;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
@@ -20,7 +23,7 @@ import java.util.List;
 public class suppliersDashRecy extends RecyclerView.Adapter<suppliersDashRecy.Veiwing> {
     private Context context;
     private List<prepareC> listing;
-
+private BroadcastReceiver broadcastReceiver;
     public suppliersDashRecy(Context context, List<prepareC> listing) {
         this.context = context;
         this.listing = listing;
@@ -49,21 +52,6 @@ public class suppliersDashRecy extends RecyclerView.Adapter<suppliersDashRecy.Ve
                     int number = queryDocumentSnapshots.size();
                     if (number > 0) {
                         holder.quantity.setText(Integer.toString(number));
-                    } else {
-                        holder.quantity.setText("");
-                    }
-                }
-            });
-        }
-        if (name.getCategory().equals("Enquiries")) {
-
-            CollectionReference enquire = firestore.collection("Enquiry");
-            enquire.whereEqualTo("toId",sql.getUser()).whereEqualTo("seen",false).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                @Override
-                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                    int numba = queryDocumentSnapshots.size();
-                    if (numba > 0) {
-                        holder.quantity.setText(Integer.toString(numba));
                     } else {
                         holder.quantity.setText("");
                     }
@@ -101,6 +89,7 @@ public class suppliersDashRecy extends RecyclerView.Adapter<suppliersDashRecy.Ve
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if(name.getCategory().equals("Orders")){
                     Intent send=new Intent(context,Qrders.class);
                     send.putExtra("userType","supplierId");
@@ -110,10 +99,7 @@ public class suppliersDashRecy extends RecyclerView.Adapter<suppliersDashRecy.Ve
                     Intent notify=new Intent(context,Notifiying.class);
                     context.startActivity(notify);
                 }
-                if (name.getCategory().equals("Enquiries")) {
-                    Intent intent=new Intent(context,Enquiries.class);
-                    context.startActivity(intent);
-                }
+
                 if(name.getCategory().equals("Products")){
                     Intent intent=new Intent(context,productSeller.class);
                     context.startActivity(intent);

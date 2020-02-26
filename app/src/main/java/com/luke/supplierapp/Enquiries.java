@@ -1,5 +1,6 @@
 package com.luke.supplierapp;
 
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -32,41 +33,9 @@ public class Enquiries extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_enquiries);
-        tool = findViewById(R.id.too);
+        setContentView(R.layout.activity_enquire);
+        tool = findViewById(R.id.toolbar);
         setSupportActionBar(tool);
-        getSupportActionBar().setTitle("Enquiries");
-        recy = findViewById(R.id.recyclerview);
-        firestore = FirebaseFirestore.getInstance();
-        sqlite sqlite = new sqlite(this);
-        enque = new ArrayList<>();
-        LinearLayoutManager layout=new LinearLayoutManager(this);
-        DividerItemDecoration deco=new DividerItemDecoration(this,layout.getOrientation());
-        recy.addItemDecoration(deco);
-        recy.setLayoutManager(layout);
-        final CollectionReference refer = firestore.collection("Numenq").document(sqlite.getUser()).collection("enquire");
-        refer.orderBy("seen", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if(!queryDocumentSnapshots.isEmpty()) {
-                for (QueryDocumentSnapshot query : queryDocumentSnapshots) {
-                    setEnqChat eq = query.toObject(setEnqChat.class);
-                    enque.add(eq);
-                } }
-                else {Toast.makeText(getBaseContext(),"No enquiry",Toast.LENGTH_SHORT).show();}
-                chats = new enquiriRecy(enque, getBaseContext());
-                recy.setAdapter(chats);
-            }
-
-        });
-recy.setHasFixedSize(true);
-for(setEnqChat chating:enque){
-    DocumentReference dc=refer.document(chating.getUsedId());
-    setEnqChat cht=new setEnqChat();
-    cht.setUsedId(chating.getUsedId());
-    cht.setSeen(0);
-    dc.set(cht);
-
-}
+        tool.setTitleTextColor(Color.RED);
     }
 }

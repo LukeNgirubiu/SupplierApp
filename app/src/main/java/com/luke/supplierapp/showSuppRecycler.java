@@ -55,7 +55,7 @@ public class showSuppRecycler extends RecyclerView.Adapter<showSuppRecycler.View
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(context,productsShow.class);
-                intent.putExtra("id",detail.getId());
+                intent.putExtra("Id",detail.getId());
                 intent.putExtra("Category",categ);
                 context.startActivity(intent);
             }
@@ -69,11 +69,6 @@ public class showSuppRecycler extends RecyclerView.Adapter<showSuppRecycler.View
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()){
-                            case R.id.enquire:
-                              Intent intent=new Intent(context,Enquire.class);
-                              intent.putExtra("user",detail.getId());
-                              context.startActivity(intent);
-                                break;
                             case R.id.subscribe:
                                 FirebaseFirestore fire=FirebaseFirestore.getInstance();
                                 sqlite sql=new sqlite(context);

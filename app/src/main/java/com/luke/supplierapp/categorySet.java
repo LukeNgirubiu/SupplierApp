@@ -5,13 +5,15 @@ public class categorySet {
     private Double latitude;
     private Double longitude;
 
-    public categorySet(String supplierId, Double latitude, Double longitude) {
+
+    public categorySet() {
+    }
+
+    public categorySet(String supplierId, Double latitude, Double longitude, Double altitude) {
         this.supplierId = supplierId;
         this.latitude = latitude;
         this.longitude = longitude;
-    }
 
-    public categorySet() {
     }
 
     public String getSupplierId() {

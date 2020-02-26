@@ -50,7 +50,7 @@ private String orderId;
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         setQrders orders=documentSnapshot.toObject(setQrders.class);
-                       CollectionReference collect= dbreference.collection("Particulars");
+                       CollectionReference collect= dbreference.collection("Users");
                        collect.whereEqualTo("contact",orders.getBuyer()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                            @Override
                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {

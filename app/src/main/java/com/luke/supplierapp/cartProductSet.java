@@ -12,37 +12,11 @@ public class cartProductSet {
     private long Total;
     private String productId;
     private String units;
+    private String sellerId;
     @ServerTimestamp
     private Date date;
 
     public cartProductSet() {
-    }
-
-    public cartProductSet(String productName, long productPrice, long quantity, String categoryId, long total, String productId, String units, Date date) {
-        this.productName = productName;
-        this.productPrice = productPrice;
-        this.quantity = quantity;
-        this.categoryId = categoryId;
-        Total = total;
-        this.productId = productId;
-        this.units = units;
-        this.date = date;
-    }
-
-    public String getProductId() {
-        return productId;
-    }
-
-    public void setProductId(String productId) {
-        this.productId = productId;
-    }
-
-    public long getTotal() {
-        return Total;
-    }
-
-    public void setTotal(long total) {
-        Total = total;
     }
 
     public String getProductName() {
@@ -77,6 +51,22 @@ public class cartProductSet {
         this.categoryId = categoryId;
     }
 
+    public long getTotal() {
+        return Total;
+    }
+
+    public void setTotal(long total) {
+        Total = total;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
     public String getUnits() {
         return units;
     }
@@ -85,11 +75,32 @@ public class cartProductSet {
         this.units = units;
     }
 
+    public String getSellerId() {
+        return sellerId;
+    }
+
+    public void setSellerId(String sellerId) {
+        this.sellerId = sellerId;
+    }
+
     public Date getDate() {
         return date;
     }
 
     public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public cartProductSet(String productName, long productPrice, long quantity, String categoryId, long total, String productId, String units, String sellerId, Date date) {
+
+        this.productName = productName;
+        this.productPrice = productPrice;
+        this.quantity = quantity;
+        this.categoryId = categoryId;
+        Total = total;
+        this.productId = productId;
+        this.units = units;
+        this.sellerId = sellerId;
         this.date = date;
     }
 }

@@ -8,7 +8,9 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
@@ -28,9 +30,9 @@ public class productsShow extends AppCompatActivity {
     private FloatingActionButton cart;
     CollectionReference reference;
     private List<productSet> products;
+    String userd;
     private RecyclerView recyclerView;
     private productSetRecycler prodc;
-    private String userid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +42,9 @@ public class productsShow extends AppCompatActivity {
         cart = findViewById(R.id.cartitems);
         firestore = FirebaseFirestore.getInstance();
         Bundle bundle = getIntent().getExtras();
-         userid = bundle.getString("id");
+        userd = bundle.getString("Id");
         String category = bundle.getString("Category");
-        reference = firestore.collection("Products").document( userid).collection("products");
+        reference = firestore.collection("Products").document( userd).collection("products");
         products = new ArrayList<>();
         recyclerView = findViewById(R.id.recyclerview);
         setSupportActionBar(toolbar);
@@ -51,20 +53,34 @@ public class productsShow extends AppCompatActivity {
         cart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(productsShow.this, cartProducts.class);
-                intent.putExtra("id", userid);
-                startActivity(intent);
+                sqlite sql=new sqlite(getBaseContext());
+                CollectionReference refer2 = firestore.collection("Cart").
+                        document(sql.getUser()).collection(userd);
+                refer2.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        if(!queryDocumentSnapshots.isEmpty()){
+                            Intent intent = new Intent(productsShow.this, cartProducts.class);
+                            intent.putExtra("Id", userd);
+                            startActivity(intent);
+                        }
+                        else {
+                            Toast.makeText(getBaseContext(),"No products in the cart",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
             }
         });
         if (category == null) {
-            whereNoCategory();
+            whereNoCategory(userd);
         } else {
-            whereCategory(category);
+            whereCategory(category,userd);
         }
 
     }
 
-    private void whereNoCategory() {
+    private void whereNoCategory(final String userid) {
         reference.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -82,16 +98,17 @@ public class productsShow extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
     }
 
-    private void whereCategory(String id) {
+    private void whereCategory(String id, final String user) {
         reference.whereEqualTo("categoryId", id).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 products.clear();
                 for (QueryDocumentSnapshot query : queryDocumentSnapshots) {
                     productSet product = query.toObject(productSet.class);
+                    product.setProductId(query.getId());
                     products.add(product);
                 }
-                prodc = new productSetRecycler(products, getBaseContext(),userid);
+                prodc = new productSetRecycler(products, getBaseContext(),user);
                 recyclerView.setAdapter(prodc);
             }
         });
