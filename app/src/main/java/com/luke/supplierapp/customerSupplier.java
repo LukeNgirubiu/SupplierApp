@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -63,7 +64,7 @@ private Double myLongitude,myLatitude;
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getBaseContext());
+                AlertDialog.Builder builder = new AlertDialog.Builder(getApplication().getBaseContext());
                 builder.setTitle("Delete the Order");
                 builder.setIcon(R.drawable.addproduct);
                 builder.setMessage("Continue with deleting the order?");
