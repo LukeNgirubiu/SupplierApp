@@ -1,62 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/cards"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:layout_margin="3dp">
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/firstName"
-            android:layout_alignParentStart="true"
-            android:layout_marginStart="3dp"
-            android:text="Hello"
-            android:layout_marginEnd="3dp"
-            android:textSize="18dp"
-            android:layout_width="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:layout_height="wrap_content" />
+        android:layout_height="70dp">
+        />
 
         <TextView
-            android:id="@+id/secondName"
+            android:id="@+id/name"
+            style="@style/TextAppearance.AppCompat.Large"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="3dp"
-            android:layout_toRightOf="@+id/firstName"
-            android:text="Hello"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:layout_alignParentTop="true"
+            android:text="Morning"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="5dp"
             android:textSize="18dp" />
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profile"
-            android:layout_width="67dp"
-            android:layout_height="65dp"
-
-            android:layout_below="@+id/firstName"
-            android:layout_marginBottom="5dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="-2dp" />
-
         <TextView
-            android:id="@+id/count"
+            android:id="@+id/time"
+            style="@style/TextAppearance.AppCompat.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@id/secondName"
-            android:layout_marginEnd="10dp"
-            android:text="Count"
-            android:textColor="@color/appColor" />
+            android:layout_below="@+id/name"
+            android:text="High"
+            android:textColor="@color/appColor"
+            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="9dp"
+            android:textSize="12dp" />
+
         <TextView
-            android:id="@+id/date"
+            android:id="@+id/productsValue"
+            style="@style/TextAppearance.AppCompat.Large"
             android:layout_width="wrap_content"
+            android:textColor="@android:color/holo_red_dark"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_below="@id/count"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="10dp"
-            android:text="Time"
-            android:textColor="@color/appColor" />
-
+            android:layout_marginRight="25dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="8dp"
+            android:text="Hello"
+            android:textSize="14dp" />
+        <TextView
+            style="@style/TextAppearance.AppCompat.Large"
+            android:layout_width="wrap_content"
+            android:textColor="@color/appColor"
+            android:layout_height="wrap_content"
+           android:layout_toLeftOf="@id/productsValue"
+            android:layout_marginRight="5dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="8dp"
+            android:text="Ksh"
+            android:textSize="14dp" />
+        <TextView
+            android:id="@+id/productNumber"
+            style="@style/TextAppearance.AppCompat.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/holo_blue_dark"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="25dp"
+            android:layout_marginBottom="3dp"
+            android:layout_below="@+id/productsValue"
+            android:text="Hello"
+            android:textSize="12dp" />
     </RelativeLayout>
 </android.support.v7.widget.CardView>

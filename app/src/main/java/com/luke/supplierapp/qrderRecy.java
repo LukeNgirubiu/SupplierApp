@@ -1,5 +1,4 @@
 package com.luke.supplierapp;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,28 +12,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
-
 import java.util.Calendar;
 import java.util.List;
-
 import de.hdodenhof.circleimageview.CircleImageView;
-
 import static java.util.Calendar.getInstance;
-
 public class qrderRecy extends RecyclerView.Adapter<qrderRecy.Viewer> {
     private Context context;
-    private List<setQrders> list;
+    private List<setQrders> orderlist;
     private String userType;
 
     public qrderRecy(Context context, List<setQrders> list, String userType) {
         this.context = context;
-        this.list = list;
+        this.orderlist = list;
         this.userType = userType;
     }
 
@@ -46,9 +44,58 @@ public class qrderRecy extends RecyclerView.Adapter<qrderRecy.Viewer> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final Viewer holder, int position) {
-        final setQrders orders = list.get(position);
+    public void onBindViewHolder(@NonNull final Viewer holder, final int position) {
+        final setQrders orders = orderlist.get(position);
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (userType.equals("customerId")) {
+                    sqlite se = new sqlite(context);
+                    final PopupMenu pop = new PopupMenu(context, holder.cardView);
+                    pop.inflate(R.menu.removeorder);
+                    pop.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            int pressedItem=item.getItemId();
+                            switch (pressedItem) {
+                                case R.id.remove:
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                    builder.setTitle("Delete the Order");
+                                    builder.setMessage("Continue with deleting this order?");
+                                    builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(final DialogInterface dialog, int which) {
+                                            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+                                            final DocumentReference reference = firestore.collection("Orders").document(orders.getOrderId());
+                                            reference.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    notifyItemRemoved(position);
+                                                    notifyItemRangeChanged(position,orderlist.size());
+                                                    Toast.makeText(context,"Deleted",Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+                                            dialog.dismiss();
+                                        }
+                                    });
+                                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                                    AlertDialog alert = builder.create();
+                                    alert.show();
+                                    break;
+                            }
+                            return false;
+                        }
+                    });
+                    pop.show();
+
+                } return true;}
+        });
         holder.phonecontact.setText("Ksh " + Long.toString(orders.getProductPrice()));
         if (userType.equals("customerId")) {
             DocumentReference reference = firestore.collection("Users").document(orders.getSupplierId());
@@ -79,9 +126,6 @@ public class qrderRecy extends RecyclerView.Adapter<qrderRecy.Viewer> {
                 holder.seen.setText("New");
             }
         }
-
-
-        //set for the case of supplier
         Calendar calendar = getInstance();
         calendar.setTime(orders.getDate());
         int year = calendar.get(Calendar.YEAR);
@@ -106,7 +150,7 @@ public class qrderRecy extends RecyclerView.Adapter<qrderRecy.Viewer> {
                         holder.ordertime.setText("Now");
                     } else {
                         if (minute < 10) {
-                            holder.ordertime.setText("Yesterday" + " " + h + ":" + "0" + m);
+                            holder.ordertime.setText("Today" + " " + h + ":" + "0" + m);
                         } else {
                             holder.ordertime.setText("Today" + " " + h + ":" + m);
                         }
@@ -117,7 +161,7 @@ public class qrderRecy extends RecyclerView.Adapter<qrderRecy.Viewer> {
                     if (minute < 10) {
                         holder.ordertime.setText("Yesterday" + " " + h + ":" + "0" + m);
                     } else {
-                        holder.ordertime.setText("Today" + " " + h + ":" + m);
+                        holder.ordertime.setText("Yesterday" + " " + h + ":" + m);
                     }
                 } else {
                     String h = Integer.toString(month);
@@ -134,57 +178,22 @@ public class qrderRecy extends RecyclerView.Adapter<qrderRecy.Viewer> {
             String h = Integer.toString(day);
             holder.ordertime.setText(h + " " + monthsNames[month] + " " + year);
         }
-        holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                sqlite se = new sqlite(context);
-                if (userType.equals("customerId") && (se.getUser().equals(orders.getCustomerId()))) {
-                    PopupMenu pop = new PopupMenu(context, holder.cardView);
-                    pop.inflate(R.menu.removeorder);
-                    pop.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                            builder.setTitle("Delete the Order");
-                            builder.setMessage("Continue with deleting the order?");
-                            builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    FirebaseFirestore firestore=FirebaseFirestore.getInstance();
-                                   DocumentReference reference = firestore.collection("Orders").document(orders.getOrderId());
-                                   reference.delete();
-                                }
-                            });
-                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
-                            AlertDialog alert = builder.create();
-                            alert.show();
-                            return false;
-                        }
-                    });
-                }
-                return true;
-            }
-        });
+
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sqlite se = new sqlite(context);
                 Intent productsOrder;
-                 productsOrder = new Intent(context, Products.class);
+                productsOrder = new Intent(context, Products.class);
                 productsOrder.putExtra("orderId", orders.getOrderId());
-                context.startActivity(productsOrder);}
+                context.startActivity(productsOrder);
+            }
         });
 
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return orderlist.size();
     }
 
 

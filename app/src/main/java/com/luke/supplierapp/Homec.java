@@ -33,22 +33,7 @@ public class Homec extends AppCompatActivity {
     private Date date;
     private   sqlite sdl;
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (broadcastReceiver == null) {
-            broadcastReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    longitude = intent.getDoubleExtra("Longitude", 0);
-                    latitude = intent.getDoubleExtra("Latitude", 0);
 
-                }
-            };
-        }
-        registerReceiver(broadcastReceiver, new IntentFilter("Coordinates"));
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +55,31 @@ public class Homec extends AppCompatActivity {
         recyclerView.setAdapter(recycForC);
         recyclerView.setHasFixedSize(true);
 
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        list.clear();
+        if (broadcastReceiver == null) {
+            broadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    longitude = intent.getDoubleExtra("Longitude", 0);
+                    latitude = intent.getDoubleExtra("Latitude", 0);
+
+                }
+            };
+        }
+        registerReceiver(broadcastReceiver, new IntentFilter("Coordinates"));
+
+        list.add(new prepareC("Suppliers"));
+        list.add(new prepareC("Categories"));
+        list.add(new prepareC("My orders"));
+        list.add(new prepareC("Carts"));
+        recycForC = new RecycForC(this, list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(recycForC);
+        recyclerView.setHasFixedSize(true);
     }
 
     @Override

@@ -34,20 +34,19 @@ public class customerSupplier extends AppCompatActivity {
     private FirebaseFirestore firestore;
     private Toolbar toolbar;
     private int determint;
-    private Button button;
     private String categoryId;
     private DocumentReference user;
     private BroadcastReceiver broadcastReceiver;
 private Double myLongitude,myLatitude;
     private List<userDetails> suppliers;
     showSuppRecycler show;
+    Context context=null;
     private CollectionReference reference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_supplier);
-        button=findViewById(R.id.press);
         firestore = FirebaseFirestore.getInstance();
         reference = firestore.collection("Users");
         sqlite sq=new sqlite(this);
@@ -59,30 +58,9 @@ private Double myLongitude,myLatitude;
         determint = bundels.getInt("Determiner");
         categoryId = bundels.getString("categoryId");
         recyclerView = findViewById(R.id.recyclerview);
+        context=this;
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         suppliers = new ArrayList<>();
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getApplication().getBaseContext());
-                builder.setTitle("Delete the Order");
-                builder.setIcon(R.drawable.addproduct);
-                builder.setMessage("Continue with deleting the order?");
-                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                AlertDialog alert = builder.create();
-                alert.show();
-            }
-        });
     }
     @Override
     protected void onResume() {

@@ -51,7 +51,7 @@ public class productSetRecycler extends RecyclerView.Adapter<productSetRecycler.
         final productSet setProduct = products.get(position);
         Picasso.get().load(setProduct.getProductPicture()).into(holder.imagings);
         holder.productPrice.setText("Ksh " + setProduct.getProductPrice());
-        holder.productQuantity.setText(getItemCount() + " " + setProduct.getUnits());
+        holder.productQuantity.setText(Long.toString(setProduct.getQuantity()) + " " + setProduct.getUnits());
         holder.producName.setText(setProduct.getProductName());
 
         holder.cardView.setOnClickListener(new View.OnClickListener() {

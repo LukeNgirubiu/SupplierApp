@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.luke.supplierapp">
-<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-feature android:name="android.hardware.location.network" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.SEND_SMS" />
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -18,12 +16,10 @@
         <activity android:name=".Start">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".checkContact" />
-        <activity android:name=".VerifyCode" />
         <activity android:name=".Homes" />
         <activity android:name=".Homec" />
         <activity android:name=".Registration" />
@@ -39,36 +35,33 @@
         <activity android:name=".cartProducts" />
         <activity android:name=".Respond" />
         <activity android:name=".Enquiries" />
-        <activity android:name=".Enquire" />
+        <activity android:name=".submit" />
+        <activity android:name=".updateForProducts" />
+        <activity android:name=".addProduct" />
+        <activity android:name=".addingImage" />
+        <activity
+            android:name=".Testlocation"
+            android:label="@string/title_activity_testlocation"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".Cart" />
+        <activity android:name=".CartUpdate" />
+        <activity android:name=".Carting" />
 
         <service
             android:name=".locations"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-
-        <activity android:name=".addProduct" />
-        <activity android:name=".addingImage" />
-
         <service
             android:name=".OrderNotification"
             android:enabled="true"
             android:exported="true" />
-
-        <activity android:name=".submit" />
-        <activity android:name=".updateForProducts" />
-
         <service
             android:name=".location2"
             android:enabled="true"
             android:exported="true" />
 
-        <activity
-            android:name=".Testlocation"
-            android:label="@string/title_activity_testlocation"
-            android:theme="@style/AppTheme" />
-        <activity android:name=".Cart"/>
-        <activity android:name=".CartUpdate"/>
+
     </application>
 
 </manifest>

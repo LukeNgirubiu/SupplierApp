@@ -39,8 +39,8 @@ private List<prepareC> list;
     @Override
     public void onBindViewHolder(@NonNull final Viewing holder, int position) {
         final prepareC name=list.get(position);
-        FirebaseFirestore dbreference=FirebaseFirestore.getInstance();
-        sqlite sqlit=new sqlite(context);
+        final FirebaseFirestore dbreference=FirebaseFirestore.getInstance();
+        final sqlite sqlit=new sqlite(context);
         holder.homeItem.setText(name.getCategory());
    if(name.getCategory().equals("My orders")){
     CollectionReference documentReference=dbreference.collection("Orders");
@@ -89,8 +89,19 @@ holder.cardView.setOnClickListener(new View.OnClickListener() {
             context.startActivity(intent);
         }
         if(name.getCategory().equals("Carts")){
-            intent=new Intent(context,Enquire.class);
-            context.startActivity(intent);
+            CollectionReference dc=dbreference.collection("Carting").document(sqlit.getUser())
+                    .collection("cart");
+            dc.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    int number=queryDocumentSnapshots.size();
+                    if(number>0){
+                       Intent intents=new Intent(context,Carting.class);
+                        context.startActivity(intents);
+                    }
+                }
+            });
+
         }
 
 

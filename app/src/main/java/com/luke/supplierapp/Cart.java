@@ -84,8 +84,7 @@ EditText number;
                                 collectionReference.set(cart).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        DocumentReference dc=firestore.collection("Carting").document(sql.getUser())
-                                                .collection("cart").document(userId);
+                                        DocumentReference dc=firestore.collection("Carting").document(sql.getUser()).collection("cart").document(userId);
                                         setEnqChat eq=new setEnqChat();
                                         dc.set(eq);
                                         Intent intent=new Intent(getBaseContext(),customerSupplier.class);
